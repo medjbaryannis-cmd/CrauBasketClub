@@ -1,0 +1,3205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CBC Mammouth">
+<meta name="theme-color" content="#0D0D0D" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F5F5F5" media="(prefers-color-scheme: light)">
+<title>CBC Mammouth</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════ */
+:root {
+  --red:    #CC1F1F;
+  --red2:   #A01818;
+  --gold:   #C8A45A;
+  --gold2:  #A8863A;
+  --black:  #0D0D0D;
+  --dark:   #161616;
+  --dark2:  #1E1E1E;
+  --dark3:  #282828;
+  --white:  #F5F5F5;
+  --cream:  #EDE8DF;
+
+  /* semantic dark (default) */
+  --bg:          #0D0D0D;
+  --bg2:         #161616;
+  --bg3:         #1E1E1E;
+  --bg4:         #282828;
+  --surface:     #1A1A1A;
+  --border:      #2A2A2A;
+  --border2:     #333;
+  --text:        #F5F5F5;
+  --text2:       #AAAAAA;
+  --text3:       #666;
+  --accent:      #CC1F1F;
+  --accent2:     #C8A45A;
+
+  /* mesh texture pattern */
+  --mesh: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+}
+
+body.light {
+  --bg:      #F5F5F5;
+  --bg2:     #EBEBEB;
+  --bg3:     #E0E0E0;
+  --bg4:     #D5D5D5;
+  --surface: #FFFFFF;
+  --border:  #DCDCDC;
+  --border2: #CCCCCC;
+  --text:    #111111;
+  --text2:   #555555;
+  --text3:   #999999;
+}
+
+/* ══════════════════════════════════
+   RESET & BASE
+══════════════════════════════════ */
+* { margin:0; padding:0; box-sizing:border-box; -webkit-box-sizing:border-box; }
+html { -webkit-font-smoothing:antialiased; }
+button { -webkit-appearance:none; appearance:none; border-radius:0; touch-action:manipulation; cursor:pointer; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  transition: background 0.3s, color 0.3s;
+  /* Nike mesh texture */
+  background-image: var(--mesh);
+  background-size: 6px 6px;
+}
+
+/* ══════════════════════════════════
+   TOP BAR
+══════════════════════════════════ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  background-image: var(--mesh);
+  background-size: 6px 6px;
+  border-bottom: 1px solid var(--border);
+  padding: env(safe-area-inset-top, 0px) 0 0;
+}
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  gap: 12px;
+}
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-badge {
+  width: 38px;
+  height: 38px;
+  background: var(--red);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.logo-badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 3px,
+    rgba(255,255,255,0.06) 3px,
+    rgba(255,255,255,0.06) 4px
+  );
+}
+.logo-text { line-height: 1.1; }
+.logo-text .club { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; letter-spacing:1px; color:var(--text); text-transform:uppercase; }
+.logo-text .city { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--text3); font-weight:500; }
+
+.topbar-actions { display:flex; align-items:center; gap:8px; }
+.icon-btn {
+  width:34px; height:34px;
+  background:none; border:1px solid var(--border2);
+  color:var(--text2); font-size:15px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.icon-btn:hover { color:var(--text); border-color:var(--text3); }
+.icon-btn.notif { position:relative; }
+.notif-dot {
+  width:7px; height:7px;
+  background:var(--red);
+  border-radius:50%;
+  position:absolute; top:6px; right:6px;
+}
+
+/* anniversary banner */
+.anniv-banner {
+  background: linear-gradient(90deg, var(--red2) 0%, var(--red) 40%, var(--gold2) 100%);
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.anniv-banner::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent, transparent 8px,
+    rgba(255,255,255,0.05) 8px, rgba(255,255,255,0.05) 9px
+  );
+}
+.anniv-wings { font-size:14px; }
+
+/* ══════════════════════════════════
+   BOTTOM NAV
+══════════════════════════════════ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--bg);
+  background-image: var(--mesh);
+  background-size: 6px 6px;
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 100;
+  display: flex;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-family: 'Barlow', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  gap: 4px;
+  transition: color 0.2s;
+}
+.nav-item .nav-icon { font-size: 20px; line-height: 1; }
+.nav-item.active { color: var(--red); }
+.nav-item.active .nav-icon { transform: scale(1.1); }
+
+/* ══════════════════════════════════
+   PANELS
+══════════════════════════════════ */
+.panel { display:none; }
+.panel.active { display:block; }
+
+/* ══════════════════════════════════
+   STORIES BAR
+══════════════════════════════════ */
+.stories-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 16px 12px;
+  display: flex;
+  gap: 12px;
+}
+.stories-scroll::-webkit-scrollbar { display:none; }
+.story {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.story-ring {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red) 0%, var(--gold) 100%);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+.story-ring.seen {
+  background: var(--border2);
+}
+.story-ring:active { transform: scale(0.93); }
+.story-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  border: 2px solid var(--bg);
+}
+.story-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.3px;
+  text-align: center;
+  max-width: 64px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.story.active-story .story-label { color: var(--text); }
+
+/* ══════════════════════════════════
+   NEXT MATCH HERO
+══════════════════════════════════ */
+.next-match {
+  margin: 0 16px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.next-match::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red) 0%, var(--gold) 100%);
+}
+.next-match-header {
+  padding: 12px 16px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.next-match-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--red);
+}
+.next-match-date {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 500;
+}
+.match-teams {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  gap: 8px;
+}
+.match-team {
+  flex: 1;
+  text-align: center;
+}
+.match-team-logo {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 2px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin: 0 auto 8px;
+}
+.match-team-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  line-height: 1.1;
+}
+.match-team-cat {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 500;
+  margin-top: 2px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.match-vs {
+  text-align: center;
+  flex-shrink: 0;
+}
+.match-vs-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--text3);
+  letter-spacing: -1px;
+}
+.countdown {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 4px;
+}
+.countdown-unit {
+  text-align: center;
+  background: var(--bg3);
+  padding: 4px 6px;
+  min-width: 36px;
+}
+.countdown-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--red);
+  line-height: 1;
+  display: block;
+}
+.countdown-lbl {
+  font-size: 8px;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: block;
+}
+.match-footer {
+  padding: 10px 16px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+}
+.match-location {
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.match-btn {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  transition: background 0.2s;
+}
+.match-btn:active { background: var(--red2); }
+
+/* ══════════════════════════════════
+   SECTION HEADER
+══════════════════════════════════ */
+.section-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px 10px;
+}
+.section-hd-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+.section-hd-link {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--red);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+}
+
+/* ══════════════════════════════════
+   RESULTS STRIP
+══════════════════════════════════ */
+.results-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 16px 16px;
+  display: flex;
+  gap: 10px;
+}
+.results-scroll::-webkit-scrollbar { display:none; }
+.result-card {
+  flex-shrink: 0;
+  width: 160px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 12px;
+  position: relative;
+}
+.result-card.win::before  { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:var(--gold); }
+.result-card.loss::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:var(--text3); }
+.result-cat {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+.result-teams {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 4px;
+}
+.result-team-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.result-team-name.away { text-align: right; }
+.result-score {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -1px;
+  text-align: center;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+.result-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 7px;
+}
+.result-badge.win  { background:rgba(200,164,90,0.15); color:var(--gold); }
+.result-badge.loss { background:rgba(255,255,255,0.05); color:var(--text3); }
+
+/* ══════════════════════════════════
+   NEWS FEED
+══════════════════════════════════ */
+.news-card {
+  margin: 0 16px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.news-card:active { background: var(--bg3); }
+.news-thumb {
+  width: 72px; height: 72px;
+  background: var(--bg3);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  border: 1px solid var(--border2);
+}
+.news-body { flex:1; min-width:0; }
+.news-cat {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 5px;
+}
+.news-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 5px;
+}
+.news-date {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════
+   COMPETITIONS PANEL
+══════════════════════════════════ */
+.comp-teams-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 16px 16px 0;
+  display: flex;
+  gap: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+.comp-teams-scroll::-webkit-scrollbar { display:none; }
+.comp-team-btn {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text3);
+  transition: all 0.2s;
+}
+.comp-team-btn.active {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+.comp-subtabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin: 16px 0 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.comp-subtabs::-webkit-scrollbar { display:none; }
+.comp-subtab {
+  padding: 12px 18px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text3);
+  white-space: nowrap;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+.comp-subtab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.comp-subpanel { display:none; padding: 16px; }
+.comp-subpanel.active { display:block; }
+
+/* match row */
+.match-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.match-row-phase {
+  background: var(--bg3);
+  padding: 6px 12px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+}
+.match-row-body {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  gap: 8px;
+}
+.mr-team { flex:1; font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:800; text-transform:uppercase; }
+.mr-team.away { text-align:right; }
+.mr-score {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -1px;
+  text-align: center;
+  min-width: 60px;
+}
+.mr-score.upcoming { font-size:13px; color:var(--text3); letter-spacing:0; }
+.mr-date { font-size:10px; color:var(--text3); text-align:center; }
+.mr-result { font-size:10px; font-weight:700; }
+.mr-result.w { color:var(--gold); }
+.mr-result.l { color:var(--text3); }
+
+/* classement */
+.standing-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+}
+.standing-rank {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--text3);
+  min-width: 24px;
+  text-align: center;
+}
+.standing-rank.highlight { color: var(--gold); }
+.standing-name { flex:1; font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:700; text-transform:uppercase; }
+.standing-name.our-team { color: var(--red); }
+.standing-stats {
+  display: flex;
+  gap: 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text2);
+}
+.standing-pts { color: var(--text); font-weight:900; }
+
+/* ══════════════════════════════════
+   ÉQUIPES PANEL
+══════════════════════════════════ */
+.team-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 16px;
+}
+.team-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.team-card:active { background: var(--bg3); }
+.team-card-cat {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  display: block;
+  margin-bottom: 4px;
+}
+.team-card-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  display: block;
+}
+.team-card-count {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 500;
+}
+.team-card.seniors {
+  grid-column: 1/-1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  padding: 14px 16px;
+}
+.team-card::before {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background: var(--border2);
+}
+.team-card.active-team::before { background: linear-gradient(90deg, var(--red), var(--gold)); }
+
+/* ══════════════════════════════════
+   MÉDIAS PANEL
+══════════════════════════════════ */
+.media-subtabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.media-subtabs::-webkit-scrollbar { display:none; }
+.media-subtab {
+  padding: 14px 20px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text3);
+  white-space: nowrap;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+.media-subtab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.media-subpanel { display:none; }
+.media-subpanel.active { display:block; }
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 2px;
+}
+.photo-cell {
+  aspect-ratio: 1;
+  background: var(--bg3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.photo-cell:active { opacity: 0.7; }
+.photo-cell .photo-overlay {
+  position: absolute;
+  bottom: 0; left:0; right:0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  padding: 12px 6px 4px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.8);
+}
+
+.video-list { padding: 12px 16px; }
+.video-row {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  align-items: flex-start;
+}
+.video-thumb {
+  width: 100px; height: 64px;
+  background: var(--bg3);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  position: relative;
+  border: 1px solid var(--border);
+}
+.play-icon {
+  position: absolute;
+  width: 28px; height: 28px;
+  background: rgba(204,31,31,0.85);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #fff;
+}
+.video-info { flex:1; min-width:0; }
+.video-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.video-meta { font-size:11px; color:var(--text3); font-weight:500; }
+
+.highlight-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 16px;
+  display: flex;
+  gap: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.highlight-scroll::-webkit-scrollbar { display:none; }
+.highlight-card {
+  flex-shrink: 0;
+  width: 180px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.highlight-thumb {
+  height: 110px;
+  background: var(--bg4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  position: relative;
+}
+.highlight-duration {
+  position: absolute;
+  bottom: 6px; right: 6px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 5px;
+}
+.highlight-info { padding: 8px 10px; }
+.highlight-title { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700; color:var(--text); line-height:1.2; }
+.highlight-date { font-size:10px; color:var(--text3); margin-top:3px; }
+
+/* ══════════════════════════════════
+   PARTENAIRES PANEL
+══════════════════════════════════ */
+.partners-hero {
+  background: linear-gradient(135deg, var(--red2) 0%, #1a0000 100%);
+  padding: 28px 20px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.partners-hero::before {
+  content: '';
+  position: absolute; inset:0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent, transparent 8px,
+    rgba(255,255,255,0.03) 8px, rgba(255,255,255,0.03) 9px
+  );
+}
+.partners-hero h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.partners-hero p { font-size:13px; color:rgba(255,255,255,0.6); font-weight:400; }
+
+.partner-tier {
+  padding: 20px 16px 0;
+}
+.partner-tier-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tier-gold { color: var(--gold); }
+.tier-silver { color: #aaa; }
+
+.partner-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 18px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.partner-card:active { background: var(--bg3); }
+.partner-logo-box {
+  width: 56px; height: 56px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.partner-info { flex:1; }
+.partner-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.partner-type {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.partner-arrow { color: var(--text3); font-size: 16px; }
+
+/* ══════════════════════════════════
+   COACH PANEL — SYSTÈME COMPLET
+══════════════════════════════════ */
+
+/* Auth gate */
+.coach-auth-gate {
+  padding: 60px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.coach-auth-emblem {
+  width: 72px; height: 72px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--red);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+.coach-auth-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 26px; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text); margin-bottom: 8px;
+}
+.coach-auth-sub { font-size: 12px; color: var(--text3); line-height: 1.7; margin-bottom: 28px; max-width: 280px; }
+
+/* Auth modal */
+.cbc-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 9999; padding: 20px;
+}
+.cbc-modal-overlay.open { display: flex; animation: cbcFadeIn 0.25s ease; }
+@keyframes cbcFadeIn { from { opacity:0 } to { opacity:1 } }
+.cbc-modal {
+  width: min(94vw, 420px);
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  position: relative;
+  animation: cbcSlideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes cbcSlideUp {
+  from { opacity:0; transform: translateY(24px) scale(0.97) }
+  to   { opacity:1; transform: translateY(0) scale(1) }
+}
+.cbc-modal-top {
+  height: 4px;
+  background: linear-gradient(90deg, var(--red) 0%, var(--gold) 100%);
+}
+.cbc-modal-head {
+  padding: 22px 24px 0;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.cbc-modal-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--text);
+}
+.cbc-modal-close {
+  background: none; border: none;
+  color: var(--text3); font-size: 20px; line-height: 1;
+  padding: 0; margin-top: 2px; transition: color 0.2s;
+}
+.cbc-modal-close:hover { color: var(--text); }
+
+/* Auth tabs */
+.cbc-auth-tabs {
+  display: flex; border-bottom: 1px solid var(--border);
+  margin: 16px 24px 0;
+}
+.cbc-auth-tab {
+  flex: 1; padding: 10px 0;
+  background: none; border: none;
+  border-bottom: 2px solid transparent;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--text3); cursor: pointer;
+  transition: all 0.2s; margin-bottom: -1px;
+}
+.cbc-auth-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.cbc-auth-view { display: none; padding: 20px 24px 24px; }
+.cbc-auth-view.active { display: block; }
+
+.cbc-field { margin-bottom: 14px; }
+.cbc-field label {
+  display: block; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text3); font-weight: 600; margin-bottom: 7px;
+}
+.cbc-field input {
+  width: 100%; padding: 12px 14px;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); font-family: 'Barlow', sans-serif;
+  font-size: 16px; outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none; border-radius: 0;
+}
+.cbc-field input:focus { border-color: var(--gold); }
+.cbc-field input::placeholder { color: var(--text3); }
+
+.cbc-btn-primary {
+  width: 100%; padding: 14px;
+  background: var(--red); color: #fff; border: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  cursor: pointer; transition: background 0.2s;
+  margin-top: 4px;
+}
+.cbc-btn-primary:hover { background: var(--red2); }
+.cbc-btn-primary:active { transform: scale(0.99); }
+.cbc-auth-status {
+  margin-top: 12px; font-size: 12px;
+  text-align: center; min-height: 16px;
+}
+.cbc-auth-status.ok  { color: #4a9a6a; }
+.cbc-auth-status.err { color: var(--red); }
+.cbc-forgot {
+  display: block; text-align: right;
+  font-size: 11px; color: var(--text3);
+  background: none; border: none;
+  cursor: pointer; margin-top: -6px; margin-bottom: 16px;
+  text-decoration: underline; text-underline-offset: 2px;
+  font-family: 'Barlow', sans-serif;
+  text-decoration-color: transparent; transition: all 0.2s;
+}
+.cbc-forgot:hover { color: var(--gold); text-decoration-color: var(--gold); }
+
+/* ─── COACH PANEL CONTENT (logged in) ─── */
+.coach-logged { display: none; }
+.coach-logged.active { display: block; }
+
+/* Role header */
+.coach-role-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+.coach-role-info { display: flex; align-items: center; gap: 10px; }
+.coach-role-avatar {
+  width: 36px; height: 36px;
+  background: var(--bg4); border: 1px solid var(--border2);
+  border-top: 2px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 900; color: var(--gold);
+  flex-shrink: 0;
+}
+.coach-role-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text);
+}
+.coach-role-tag {
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text3); margin-top: 1px;
+}
+.coach-role-tag.admin { color: var(--red); }
+.coach-role-tag.coach { color: var(--gold); }
+.coach-role-tag.physio { color: #4a9a6a; }
+.coach-logout-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--text3); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; padding: 6px 12px;
+  cursor: pointer; transition: all 0.2s;
+}
+.coach-logout-btn:hover { color: var(--red); border-color: var(--red); }
+
+/* Sub-navigation */
+.coach-subnav {
+  display: flex; border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  overflow-x: auto; scrollbar-width: none;
+}
+.coach-subnav::-webkit-scrollbar { display: none; }
+.coach-subnav-btn {
+  flex: 1; min-width: fit-content;
+  padding: 13px 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  background: none; border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text3); cursor: pointer;
+  white-space: nowrap; transition: all 0.2s;
+  margin-bottom: -1px;
+}
+.coach-subnav-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.coach-subnav-btn:hover:not(.active) { color: var(--text); }
+
+.coach-subpanel { display: none; }
+.coach-subpanel.active { display: block; }
+
+/* Section title */
+.c-section-title {
+  padding: 20px 16px 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 3px;
+  color: var(--text3); border-bottom: 1px solid var(--border);
+}
+
+/* Loading */
+.c-loading {
+  padding: 40px 16px; text-align: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* ─── MON COACH (joueur) ─── */
+.cv-empty {
+  padding: 60px 24px; text-align: center; color: var(--text3);
+}
+.cv-empty-icon { margin-bottom: 16px; opacity: 0.3; }
+.cv-empty-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text2); margin-bottom: 8px;
+}
+.cv-empty-desc { font-size: 12px; line-height: 1.7; }
+
+.cv-msg-card {
+  margin: 12px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  animation: cbcSlideUp 0.3s ease;
+}
+.cv-msg-card.drill-card { border-left-color: var(--red); }
+.cv-msg-inner { padding: 16px 18px; }
+.cv-msg-from {
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); font-weight: 700; margin-bottom: 6px;
+}
+.cv-msg-card.drill-card .cv-msg-from { color: var(--red); }
+.cv-msg-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px; font-weight: 800;
+  text-transform: uppercase; color: var(--text);
+  margin-bottom: 8px; letter-spacing: 0.5px;
+}
+.cv-msg-body {
+  font-size: 13px; color: var(--text2); line-height: 1.8;
+  font-weight: 400; white-space: pre-wrap;
+}
+.cv-drill-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 14px;
+  background: var(--bg3); border-left: 2px solid var(--border);
+  font-size: 13px; margin-bottom: 6px;
+  transition: border-color 0.2s;
+}
+.cv-drill-item:hover { border-left-color: var(--red); }
+.cv-drill-type {
+  font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 2px 7px;
+  background: rgba(204,31,31,0.12); color: var(--red);
+  font-weight: 700; white-space: nowrap; flex-shrink: 0;
+}
+.cv-drill-type.tir   { background: rgba(200,164,90,0.12); color: var(--gold); }
+.cv-drill-type.physique  { background: rgba(74,154,106,0.12); color: #4a9a6a; }
+.cv-drill-type.defense   { background: rgba(74,111,165,0.12); color: #4a6fa5; }
+.cv-drill-type.tactique  { background: rgba(124,94,167,0.12); color: #7c5ea7; }
+.cv-drill-name { flex: 1; color: var(--text); font-weight: 500; }
+.cv-drill-detail { color: var(--gold); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.cv-msg-note {
+  font-size: 12px; color: var(--text3);
+  font-style: italic; line-height: 1.7;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+}
+.cv-msg-date {
+  font-size: 10px; color: var(--text3);
+  margin-top: 10px; letter-spacing: 1px;
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── ADMIN : MEMBRES ─── */
+.member-row {
+  display: flex; align-items: center;
+  padding: 14px 16px; gap: 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
+}
+.member-row:hover { background: var(--bg3); }
+.member-avatar {
+  width: 40px; height: 40px;
+  background: var(--bg4); border: 1px solid var(--border2);
+  border-top: 2px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; font-weight: 900; color: var(--gold);
+  flex-shrink: 0;
+}
+.member-info { flex: 1; min-width: 0; }
+.member-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px; font-weight: 700;
+  text-transform: uppercase; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.member-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.member-badge {
+  font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+  font-weight: 700; padding: 3px 8px; flex-shrink: 0;
+}
+.badge-actif  { background: rgba(200,164,90,0.12); color: var(--gold); }
+.badge-coach2 { background: rgba(204,31,31,0.12); color: var(--red); }
+.badge-physio { background: rgba(74,154,106,0.12); color: #4a9a6a; }
+.badge-admin  { background: rgba(204,31,31,0.18); color: var(--red); }
+
+/* ─── COMPOSE ─── */
+.compose-wrap { padding: 20px 16px; max-width: 640px; }
+
+.compose-type-toggle {
+  display: flex; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden;
+}
+.compose-type-btn {
+  flex: 1; padding: 12px 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  background: none; border: none; border-right: 1px solid var(--border);
+  color: var(--text3); cursor: pointer; transition: all 0.2s;
+}
+.compose-type-btn:last-child { border-right: none; }
+.compose-type-btn.active { background: rgba(204,31,31,0.1); color: var(--red); }
+
+.compose-field { margin-bottom: 16px; }
+.compose-field label {
+  display: block; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text3); font-weight: 600; margin-bottom: 7px;
+}
+.compose-field input,
+.compose-field textarea,
+.compose-field select {
+  width: 100%; padding: 12px 14px;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); font-family: 'Barlow', sans-serif;
+  font-size: 16px; outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none; border-radius: 0; resize: vertical;
+}
+.compose-field input:focus,
+.compose-field textarea:focus,
+.compose-field select:focus { border-color: var(--gold); }
+.compose-field input::placeholder,
+.compose-field textarea::placeholder { color: var(--text3); }
+.compose-field select { cursor: pointer; }
+.compose-field select option { background: var(--bg2); }
+
+/* Broadcast bar */
+.broadcast-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px;
+  background: var(--bg3); border: 1px solid var(--border);
+  margin-bottom: 6px;
+  font-size: 12px; color: var(--text3);
+}
+.broadcast-bar input[type=checkbox] {
+  accent-color: var(--gold); width: 15px; height: 15px; cursor: pointer;
+}
+
+/* Recipient chips */
+.recipient-chips {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+}
+.recipient-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px 4px 12px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700;
+  text-transform: uppercase; color: var(--text);
+}
+.chip-remove {
+  background: none; border: none; color: var(--text3);
+  font-size: 14px; cursor: pointer; padding: 0;
+  line-height: 1; transition: color 0.15s;
+}
+.chip-remove:hover { color: var(--red); }
+
+/* Drill blocks */
+.drill-blocks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.drill-block {
+  display: grid;
+  grid-template-columns: 1fr 90px 80px 80px 32px;
+  gap: 6px; align-items: center;
+}
+.drill-block input,
+.drill-block select {
+  padding: 9px 10px; font-size: 13px;
+}
+.drill-block-remove {
+  background: none; border: 1px solid var(--border);
+  color: var(--text3); font-size: 16px; cursor: pointer;
+  padding: 0; width: 32px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.drill-block-remove:hover { border-color: var(--red); color: var(--red); }
+.add-drill-btn {
+  background: none; border: 1px dashed var(--border);
+  color: var(--text3); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; padding: 10px; width: 100%;
+  cursor: pointer; transition: all 0.2s;
+}
+.add-drill-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* Status */
+.c-status { margin-top: 12px; font-size: 12px; min-height: 16px; }
+.c-status.ok  { color: #4a9a6a; }
+.c-status.err { color: var(--red); }
+
+/* Sent messages list */
+.msg-row {
+  padding: 14px 16px; border-bottom: 1px solid var(--border);
+  display: flex; gap: 14px; align-items: flex-start;
+  transition: background 0.15s;
+}
+.msg-row:hover { background: var(--bg3); }
+.msg-type-badge {
+  width: 34px; height: 34px; flex-shrink: 0; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg3); border: 1px solid var(--border);
+}
+.msg-body2 { flex: 1; min-width: 0; }
+.msg-title2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px; font-weight: 800;
+  text-transform: uppercase; color: var(--text);
+  letter-spacing: 0.5px; margin-bottom: 3px;
+}
+.msg-meta2 { font-size: 11px; color: var(--text3); display: flex; gap: 10px; flex-wrap: wrap; }
+.msg-preview2 {
+  font-size: 11px; color: var(--text3); margin-top: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ══════════════════════════════════
+   UTILITIES
+══════════════════════════════════ */
+.divider { height:1px; background:var(--border); margin:4px 0; }
+.pb-safe { padding-bottom: 16px; }
+
+/* theme toggle */
+.theme-btn {
+  background:none; border:1px solid var(--border2);
+  color:var(--text2); font-size:15px;
+  width:34px; height:34px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+
+/* ══════════════════════════════════
+   SPLASH SCREEN
+══════════════════════════════════ */
+#cbc-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#cbc-splash.done { display: none; }
+
+/* Particules rouges */
+.splash-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+.splash-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #CC1F1F;
+  border-radius: 50%;
+}
+
+/* Halo rouge central */
+.splash-halo {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(204,31,31,0.35) 0%, rgba(204,31,31,0.1) 40%, transparent 70%);
+  opacity: 0;
+  transform: scale(0.3);
+}
+
+/* Logo */
+.splash-logo-wrap {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: scale(0.6);
+}
+.splash-logo-img {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 0px #CC1F1F);
+}
+/* Glow rouge yeux */
+.splash-eye-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 38% 42%, rgba(255,30,30,0.6) 0%, transparent 25%),
+              radial-gradient(ellipse at 62% 42%, rgba(255,30,30,0.6) 0%, transparent 25%);
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+/* Reflet défenses */
+.splash-tusk-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 70%, rgba(255,255,255,0.7) 0%, transparent 20%),
+              radial-gradient(ellipse at 70% 70%, rgba(255,255,255,0.7) 0%, transparent 20%);
+  opacity: 0;
+}
+
+/* Nom app */
+.splash-title {
+  position: relative;
+  z-index: 2;
+  margin-top: 28px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: #EDE8DF;
+  opacity: 0;
+  text-shadow: 0 0 20px rgba(204,31,31,0.5);
+}
+.splash-subtitle {
+  position: relative;
+  z-index: 2;
+  margin-top: 6px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(237,232,223,0.4);
+  opacity: 0;
+}
+
+/* Red line divider */
+.splash-line {
+  position: relative;
+  z-index: 2;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #CC1F1F, #C8A45A, transparent);
+  margin-top: 14px;
+  opacity: 0;
+}
+
+/* Smoke overlay */
+.splash-smoke {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.8) 100%);
+  pointer-events: none;
+}
+
+/* Transitions */
+@keyframes splashParticle {
+  0%   { transform: translate(0,0) scale(1); opacity: 0.8; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+}
+@keyframes splashVibrate {
+  0%,100% { transform: scale(1) translateX(0); }
+  20% { transform: scale(1.02) translateX(-3px); }
+  40% { transform: scale(1.02) translateX(3px); }
+  60% { transform: scale(1.01) translateX(-2px); }
+  80% { transform: scale(1.01) translateX(2px); }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ SPLASH SCREEN ══════════ -->
+<div id="cbc-splash">
+  <div class="splash-smoke"></div>
+  <div class="splash-particles" id="splash-particles"></div>
+  <div class="splash-halo" id="splash-halo"></div>
+  <div class="splash-logo-wrap" id="splash-logo">
+    <img class="splash-logo-img" src="https://i.imgur.com/placeholder.png" id="splash-img"
+         onerror="this.style.display='none';document.getElementById('splash-svg').style.display='block'"
+         alt="CBC Mammouths">
+    <!-- SVG fallback logo -->
+    <svg id="splash-svg" style="display:block;width:220px;height:220px;" viewBox="0 0 300 290" xmlns="http://www.w3.org/2000/svg">
+      <!-- Contour blanc -->
+      <path d="M150 8 C90 8 40 50 35 105 Q30 145 42 175 Q20 210 22 250 Q24 268 45 265 Q68 262 80 235 Q100 260 130 272 Q150 280 170 272 Q200 260 220 235 Q232 262 255 265 Q276 268 278 250 Q280 210 258 175 Q270 145 265 105 Q260 50 210 18 Z" fill="white"/>
+      <!-- Fond noir -->
+      <path d="M150 18 C95 18 50 57 46 108 Q42 145 54 172 Q35 208 37 245 Q39 258 55 256 Q73 254 84 230 Q106 255 133 266 Q150 273 167 266 Q194 255 216 230 Q227 254 245 256 Q261 258 263 245 Q265 208 246 172 Q258 145 254 108 Q250 57 205 22 Z" fill="#0D0D0D"/>
+      <!-- Défenses gauche -->
+      <path d="M54 172 Q28 205 32 242 Q36 258 55 256 Q73 254 84 230 Q94 208 92 182" fill="white" stroke="#888" stroke-width="1"/>
+      <path d="M57 174 Q34 205 38 238 Q41 252 57 251 Q72 250 82 228 Q91 208 90 184" fill="#CCCCCC"/>
+      <!-- Défenses droite -->
+      <path d="M246 172 Q272 205 268 242 Q264 258 245 256 Q227 254 216 230 Q206 208 208 182" fill="white" stroke="#888" stroke-width="1"/>
+      <path d="M243 174 Q266 205 262 238 Q259 252 243 251 Q228 250 218 228 Q209 208 210 184" fill="#CCCCCC"/>
+      <!-- Corps fourrure gauche -->
+      <path d="M60 90 Q32 72 36 108 Q40 138 68 155 Q88 165 105 158" fill="#7A5510" stroke="#5C4008" stroke-width="1"/>
+      <path d="M63 93 Q40 78 44 110 Q48 135 72 150 Q90 160 104 154" fill="#9B6E1A"/>
+      <!-- Corps fourrure droite -->
+      <path d="M240 90 Q268 72 264 108 Q260 138 232 155 Q212 165 195 158" fill="#7A5510" stroke="#5C4008" stroke-width="1"/>
+      <path d="M237 93 Q260 78 256 110 Q252 135 228 150 Q210 160 196 154" fill="#9B6E1A"/>
+      <!-- Crâne -->
+      <ellipse cx="150" cy="125" rx="78" ry="74" fill="#9B6E1A"/>
+      <ellipse cx="150" cy="122" rx="74" ry="70" fill="#B07D20"/>
+      <!-- Zone sombre visage -->
+      <ellipse cx="150" cy="138" rx="60" ry="65" fill="#111"/>
+      <!-- Sourcils -->
+      <path d="M100 108 L134 120 L126 124 L92 113 Z" fill="#000"/>
+      <path d="M200 108 L166 120 L174 124 L208 113 Z" fill="#000"/>
+      <!-- Yeux rouges -->
+      <ellipse cx="122" cy="128" rx="16" ry="14" fill="#CC1F1F" id="s-eye-l"/>
+      <ellipse cx="178" cy="128" rx="16" ry="14" fill="#CC1F1F" id="s-eye-r"/>
+      <ellipse cx="122" cy="128" rx="11" ry="10" fill="#FF2020"/>
+      <ellipse cx="178" cy="128" rx="11" ry="10" fill="#FF2020"/>
+      <ellipse cx="119" cy="124" rx="5" ry="4" fill="#FF7070" opacity="0.6"/>
+      <ellipse cx="175" cy="124" rx="5" ry="4" fill="#FF7070" opacity="0.6"/>
+      <ellipse cx="123" cy="129" rx="6" ry="7" fill="#0D0D0D"/>
+      <ellipse cx="179" cy="129" rx="6" ry="7" fill="#0D0D0D"/>
+      <!-- Trompe -->
+      <path d="M134 158 Q128 170 131 183 Q136 198 148 205 Q156 209 160 202 Q165 190 161 177 Q157 165 154 158" fill="#9B6E1A" stroke="#5C4008" stroke-width="1.5"/>
+      <path d="M133 169 Q148 174 161 169" stroke="#5C4008" stroke-width="2.5" fill="none"/>
+      <path d="M132 180 Q148 186 161 180" stroke="#5C4008" stroke-width="2" fill="none"/>
+      <path d="M134 191 Q148 196 160 191" stroke="#5C4008" stroke-width="1.5" fill="none"/>
+      <!-- Touffes haut -->
+      <path d="M132 52 Q142 36 152 33 Q162 36 172 52 Q162 44 152 42 Q142 44 132 52Z" fill="#9B6E1A"/>
+      <path d="M118 62 Q126 48 136 54" fill="#7A5510"/>
+      <path d="M164 62 Q174 48 182 54" fill="#7A5510"/>
+      <!-- Éclairs front -->
+      <path d="M138 90 L134 102 L141 99 L136 114" stroke="#5C4008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M162 90 L166 102 L159 99 L164 114" stroke="#5C4008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Petites défenses -->
+      <path d="M116 188 Q100 200 98 215 Q100 224 112 220 Q122 216 126 200 L123 189Z" fill="white" stroke="#AAA" stroke-width="1"/>
+      <path d="M184 188 Q200 200 202 215 Q200 224 188 220 Q178 216 174 200 L177 189Z" fill="white" stroke="#AAA" stroke-width="1"/>
+    </svg>
+    <div class="splash-eye-glow" id="splash-eye-glow"></div>
+    <div class="splash-tusk-flash" id="splash-tusk-flash"></div>
+  </div>
+  <div class="splash-line" id="splash-line"></div>
+  <div class="splash-title" id="splash-title">CBC Mammouths</div>
+  <div class="splash-subtitle" id="splash-subtitle">Saint-Martin-de-Crau · Depuis 1976</div>
+</div>
+
+
+<!-- ══════════ TOP BAR ══════════ -->
+<div class="topbar">
+  <div class="anniv-banner">
+    — 50 ANS DU CLUB &nbsp;·&nbsp; 1976 — 2026 —
+  </div>
+  <div class="topbar-inner">
+    <div class="topbar-logo">
+      <div class="logo-badge">
+  <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Fond noir mat comme le surmaillot -->
+    <rect width="44" height="44" fill="#111"/>
+    <!-- Bordure fine dorée -->
+    <rect x="1" y="1" width="42" height="42" fill="none" stroke="rgba(200,164,90,0.3)" stroke-width="0.8"/>
+    <!-- Lignes diagonales discrètes (texture maille) -->
+    <line x1="0" y1="44" x2="44" y2="0" stroke="rgba(255,255,255,0.03)" stroke-width="6"/>
+    <!-- Texte CBC style gothique condensed bold blanc -->
+    <text x="22" y="30"
+      text-anchor="middle"
+      font-family="'Barlow Condensed', 'Impact', 'Arial Narrow', sans-serif"
+      font-size="19"
+      font-weight="900"
+      letter-spacing="1"
+      fill="#FFFFFF"
+      style="font-style:normal;text-transform:uppercase;">CBC</text>
+    <!-- Soulignement doré fin sous le texte -->
+    <line x1="8" y1="34" x2="36" y2="34" stroke="#C8A45A" stroke-width="1"/>
+  </svg>
+</div>
+      <div class="logo-text">
+        <div class="club">Mammouths</div>
+        <div class="city">Saint-Martin-de-Crau</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn notif" onclick="showPanel('notifications')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="notif-dot"></span>
+      </button>
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PANELS ══════════ -->
+
+<!-- ACCUEIL -->
+<div class="panel active" id="panel-home">
+
+  <!-- Stories -->
+  <div class="stories-scroll">
+    <div class="story active-story" onclick="openStory('resultats')">
+      <div class="story-ring"><div class="story-inner"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div></div>
+      <span class="story-label">Résultats</span>
+    </div>
+    <div class="story" onclick="openStory('prochains')">
+      <div class="story-ring"><div class="story-inner"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div></div>
+      <span class="story-label">Prochains</span>
+    </div>
+    <div class="story" onclick="openStory('highlights')">
+      <div class="story-ring"><div class="story-inner"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+      <span class="story-label">Highlights</span>
+    </div>
+    <div class="story seen" onclick="openStory('classement')">
+      <div class="story-ring seen"><div class="story-inner"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg></div></div>
+      <span class="story-label">Classement</span>
+    </div>
+    <div class="story seen" onclick="openStory('effectif')">
+      <div class="story-ring seen"><div class="story-inner"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div></div>
+      <span class="story-label">Effectif</span>
+    </div>
+    <div class="story seen" onclick="openStory('galerie')">
+      <div class="story-ring seen"><div class="story-inner"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></div>
+      <span class="story-label">Galerie</span>
+    </div>
+    <div class="story seen" onclick="openStory('partenaires')">
+      <div class="story-ring seen"><div class="story-inner"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div></div>
+      <span class="story-label">Partenaires</span>
+    </div>
+  </div>
+
+  <!-- Prochain match -->
+  <div class="next-match">
+    <div class="next-match-header">
+      <span class="next-match-label">Prochain match</span>
+      <span class="next-match-date">Sam. 7 Juin · 18h00</span>
+    </div>
+    <div class="match-teams">
+      <div class="match-team">
+        <div class="match-team-logo" style="background:var(--red);border-color:var(--red);">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+        <path d="M8 12c0-2 1.5-3.5 4-4 2.5-.5 4 1 4 3 0 2-1.5 3-3 3.5"/>
+        <circle cx="12" cy="17" r="1" fill="rgba(255,255,255,0.9)"/>
+      </svg>
+    </div>
+        <div class="match-team-name">CBC<br>Mammouth</div>
+        <div class="match-team-cat">Seniors M</div>
+      </div>
+      <div class="match-vs">
+        <div class="match-vs-text">VS</div>
+        <div class="countdown" id="countdown">
+          <div class="countdown-unit"><span class="countdown-val" id="cd-j">10</span><span class="countdown-lbl">J</span></div>
+          <div class="countdown-unit"><span class="countdown-val" id="cd-h">14</span><span class="countdown-lbl">H</span></div>
+          <div class="countdown-unit"><span class="countdown-val" id="cd-m">32</span><span class="countdown-lbl">M</span></div>
+        </div>
+      </div>
+      <div class="match-team">
+        <div class="match-team-logo">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M4.93 4.93l4.24 4.24"/><path d="M14.83 9.17l4.24-4.24"/>
+        <path d="M14.83 14.83l4.24 4.24"/><path d="M9.17 14.83l-4.24 4.24"/>
+        <path d="M12 2v20"/><path d="M2 12h20"/>
+      </svg>
+    </div>
+        <div class="match-team-name">Salon<br>Basket</div>
+        <div class="match-team-cat">Seniors M</div>
+      </div>
+    </div>
+    <div class="match-footer">
+      <span class="match-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Gymnase Marcel Cerdan</span>
+      <button class="match-btn" onclick="showPanel('map')">Itinéraire</button>
+    </div>
+  </div>
+
+  <!-- Derniers résultats -->
+  <div class="section-hd">
+    <span class="section-hd-title">Derniers résultats</span>
+    <button class="section-hd-link" onclick="navTo('competitions')">Tout voir</button>
+  </div>
+  <div class="results-scroll">
+    <div class="result-card win">
+      <div class="result-cat">Seniors M · J14</div>
+      <div class="result-teams">
+        <span class="result-team-name">CBC</span>
+        <span class="result-score">78-65</span>
+        <span class="result-team-name away">Arles</span>
+      </div>
+      <span class="result-badge win">Victoire</span>
+    </div>
+    <div class="result-card win">
+      <div class="result-cat">U15 · J11</div>
+      <div class="result-teams">
+        <span class="result-team-name">CBC</span>
+        <span class="result-score">54-41</span>
+        <span class="result-team-name away">Martigues</span>
+      </div>
+      <span class="result-badge win">Victoire</span>
+    </div>
+    <div class="result-card loss">
+      <div class="result-cat">U17 · J12</div>
+      <div class="result-teams">
+        <span class="result-team-name">CBC</span>
+        <span class="result-score">44-61</span>
+        <span class="result-team-name away">Istres</span>
+      </div>
+      <span class="result-badge loss">Défaite</span>
+    </div>
+    <div class="result-card win">
+      <div class="result-cat">U13 · J10</div>
+      <div class="result-teams">
+        <span class="result-team-name">CBC</span>
+        <span class="result-score">36-28</span>
+        <span class="result-team-name away">Tarascon</span>
+      </div>
+      <span class="result-badge win">Victoire</span>
+    </div>
+    <div class="result-card win">
+      <div class="result-cat">Seniors F · J13</div>
+      <div class="result-teams">
+        <span class="result-team-name">CBC</span>
+        <span class="result-score">62-58</span>
+        <span class="result-team-name away">Fos</span>
+      </div>
+      <span class="result-badge win">Victoire</span>
+    </div>
+  </div>
+
+  <!-- Actualités -->
+  <div class="section-hd">
+    <span class="section-hd-title">Actualités</span>
+    <button class="section-hd-link">Tout voir</button>
+  </div>
+
+  <div class="news-card">
+    <div class="news-thumb"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg></div>
+    <div class="news-body">
+      <div class="news-cat">Anniversaire</div>
+      <div class="news-title">50 ans du CBC — Retour sur une saison historique</div>
+      <div class="news-date">27 mai 2026</div>
+    </div>
+  </div>
+  <div class="news-card">
+    <div class="news-thumb"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+    <div class="news-body">
+      <div class="news-cat">Highlights</div>
+      <div class="news-title">Les meilleures actions de la saison — Vol. 3</div>
+      <div class="news-date">24 mai 2026</div>
+    </div>
+  </div>
+  <div class="news-card">
+    <div class="news-thumb"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+    <div class="news-body">
+      <div class="news-cat">Organisation</div>
+      <div class="news-title">Inscriptions 2026-2027 ouvertes — Toutes catégories</div>
+      <div class="news-date">20 mai 2026</div>
+    </div>
+  </div>
+  <div class="news-card">
+    <div class="news-thumb"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+    <div class="news-body">
+      <div class="news-cat">Partenariat</div>
+      <div class="news-title">Nestenn renouvelle son partenariat pour la saison 2026-2027</div>
+      <div class="news-date">15 mai 2026</div>
+    </div>
+  </div>
+
+  <div class="pb-safe"></div>
+</div>
+
+<!-- COMPÉTITIONS -->
+<div class="panel" id="panel-competitions">
+  <!-- FFBB banner -->
+  <div style="background:rgba(204,31,31,0.08);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);">Données FFBB — Comité 13</span>
+    <a href="https://competitions.ffbb.com/ligues/sud/comites/0013" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);text-decoration:none;">Ouvrir FFBB ↗</a>
+  </div>
+  <!-- Team selector -->
+  <div class="comp-teams-scroll">
+    <button class="comp-team-btn active" onclick="selectCompTeam(this)">Seniors M</button>
+    <button class="comp-team-btn" onclick="selectCompTeam(this)">Seniors F</button>
+    <button class="comp-team-btn" onclick="selectCompTeam(this)">U18</button>
+    <button class="comp-team-btn" onclick="selectCompTeam(this)">U15</button>
+    <button class="comp-team-btn" onclick="selectCompTeam(this)">U13</button>
+    <button class="comp-team-btn" onclick="selectCompTeam(this)">U11</button>
+    <button class="comp-team-btn" onclick="selectCompTeam(this)">U9</button>
+    <button class="comp-team-btn" onclick="selectCompTeam(this)">U7</button>
+    <button class="comp-team-btn" onclick="selectCompTeam(this)">U5</button>
+    <button class="comp-team-btn" onclick="selectCompTeam(this)">Loisirs</button>
+  </div>
+
+  <!-- Sub tabs -->
+  <div class="comp-subtabs">
+    <button class="comp-subtab active" onclick="switchCompTab(this,'resultats-tab')">Résultats</button>
+    <button class="comp-subtab" onclick="switchCompTab(this,'calendrier-tab')">Calendrier</button>
+    <button class="comp-subtab" onclick="switchCompTab(this,'classement-tab')">Classement</button>
+  </div>
+
+  <!-- Résultats -->
+  <div class="comp-subpanel active" id="resultats-tab">
+    <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;padding:0 4px;">
+      ▼ SAISON RÉGULIÈRE · PHASE 2
+    </div>
+    <div class="match-row">
+      <div class="match-row-phase">Janvier · J12</div>
+      <div class="match-row-body">
+        <span class="mr-team">CBC</span>
+        <div style="text-align:center;min-width:70px;">
+          <div class="mr-score">71 · 58</div>
+          <div class="mr-result w">Victoire +13</div>
+        </div>
+        <span class="mr-team away">Arles BC</span>
+      </div>
+    </div>
+    <div class="match-row">
+      <div class="match-row-phase">Janvier · J11</div>
+      <div class="match-row-body">
+        <span class="mr-team">Martigues</span>
+        <div style="text-align:center;min-width:70px;">
+          <div class="mr-score">84 · 72</div>
+          <div class="mr-result l">Défaite -12</div>
+        </div>
+        <span class="mr-team away">CBC</span>
+      </div>
+    </div>
+    <div class="match-row">
+      <div class="match-row-phase">Décembre · J10</div>
+      <div class="match-row-body">
+        <span class="mr-team">CBC</span>
+        <div style="text-align:center;min-width:70px;">
+          <div class="mr-score">88 · 67</div>
+          <div class="mr-result w">Victoire +21</div>
+        </div>
+        <span class="mr-team away">Istres</span>
+      </div>
+    </div>
+    <div class="match-row">
+      <div class="match-row-phase">Décembre · J9</div>
+      <div class="match-row-body">
+        <span class="mr-team">CBC</span>
+        <div style="text-align:center;min-width:70px;">
+          <div class="mr-score">63 · 78</div>
+          <div class="mr-result l">Défaite -15</div>
+        </div>
+        <span class="mr-team away">Salon</span>
+      </div>
+    </div>
+    <div style="text-align:center;padding:16px;">
+      <a href="https://competitions.ffbb.com/ligues/sud/comites/0013" target="_blank" style="display:inline-block;background:none;border:1px solid var(--border2);color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:10px 24px;text-decoration:none;">
+        Voir sur FFBB ↗
+      </a>
+    </div>
+  </div>
+
+  <!-- Calendrier -->
+  <div class="comp-subpanel" id="calendrier-tab">
+    <div class="match-row">
+      <div class="match-row-phase" style="border-left:2px solid var(--red);color:var(--red);">Prochain match · J15</div>
+      <div class="match-row-body">
+        <span class="mr-team">CBC</span>
+        <div style="text-align:center;min-width:70px;">
+          <div class="mr-score upcoming">Sam 7 Juin<br>18h00</div>
+        </div>
+        <span class="mr-team away">Salon</span>
+      </div>
+    </div>
+    <div class="match-row">
+      <div class="match-row-phase">J16</div>
+      <div class="match-row-body">
+        <span class="mr-team">Fos BC</span>
+        <div style="text-align:center;min-width:70px;">
+          <div class="mr-score upcoming">Sam 14 Juin<br>20h30</div>
+        </div>
+        <span class="mr-team away">CBC</span>
+      </div>
+    </div>
+    <div class="match-row">
+      <div class="match-row-phase">J17</div>
+      <div class="match-row-body">
+        <span class="mr-team">CBC</span>
+        <div style="text-align:center;min-width:70px;">
+          <div class="mr-score upcoming">Sam 21 Juin<br>18h00</div>
+        </div>
+        <span class="mr-team away">Martigues</span>
+      </div>
+    </div>
+    <div style="text-align:center;padding:16px;">
+      <a href="https://competitions.ffbb.com/ligues/sud/comites/0013" target="_blank" style="display:inline-block;background:none;border:1px solid var(--border2);color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:10px 24px;text-decoration:none;">
+        Voir sur FFBB ↗
+      </a>
+    </div>
+  </div>
+
+  <!-- Classement -->
+  <div class="comp-subpanel" id="classement-tab">
+    <div style="display:flex;gap:16px;padding:0 4px 10px;border-bottom:1px solid var(--border);margin-bottom:8px;">
+      <span style="min-width:24px;"></span>
+      <span style="flex:1;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);">Équipe</span>
+      <span style="font-size:9px;font-weight:700;letter-spacing:1px;color:var(--text3);min-width:20px;text-align:center;">J</span>
+      <span style="font-size:9px;font-weight:700;letter-spacing:1px;color:var(--text3);min-width:20px;text-align:center;">G</span>
+      <span style="font-size:9px;font-weight:700;letter-spacing:1px;color:var(--text3);min-width:20px;text-align:center;">P</span>
+      <span style="font-size:9px;font-weight:700;letter-spacing:1px;color:var(--gold);min-width:24px;text-align:center;">Pts</span>
+    </div>
+    <div class="standing-row">
+      <div class="standing-rank highlight">1</div>
+      <div class="standing-name" style="flex:1;">Martigues</div>
+      <div style="display:flex;gap:16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--text2);">
+        <span style="min-width:20px;text-align:center;">14</span>
+        <span style="min-width:20px;text-align:center;">11</span>
+        <span style="min-width:20px;text-align:center;">3</span>
+        <span style="min-width:24px;text-align:center;color:var(--text);font-weight:900;">25</span>
+      </div>
+    </div>
+    <div class="standing-row" style="background:rgba(204,31,31,0.06);">
+      <div class="standing-rank highlight">2</div>
+      <div class="standing-name our-team" style="flex:1;">CBC Mammouth</div>
+      <div style="display:flex;gap:16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--text2);">
+        <span style="min-width:20px;text-align:center;">14</span>
+        <span style="min-width:20px;text-align:center;">10</span>
+        <span style="min-width:20px;text-align:center;">4</span>
+        <span style="min-width:24px;text-align:center;color:var(--red);font-weight:900;">24</span>
+      </div>
+    </div>
+    <div class="standing-row">
+      <div class="standing-rank">3</div>
+      <div class="standing-name" style="flex:1;">Salon BC</div>
+      <div style="display:flex;gap:16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--text2);">
+        <span style="min-width:20px;text-align:center;">14</span>
+        <span style="min-width:20px;text-align:center;">9</span>
+        <span style="min-width:20px;text-align:center;">5</span>
+        <span style="min-width:24px;text-align:center;color:var(--text);font-weight:900;">23</span>
+      </div>
+    </div>
+    <div class="standing-row">
+      <div class="standing-rank">4</div>
+      <div class="standing-name" style="flex:1;">Fos BC</div>
+      <div style="display:flex;gap:16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--text2);">
+        <span style="min-width:20px;text-align:center;">14</span>
+        <span style="min-width:20px;text-align:center;">8</span>
+        <span style="min-width:20px;text-align:center;">6</span>
+        <span style="min-width:24px;text-align:center;color:var(--text);font-weight:900;">22</span>
+      </div>
+    </div>
+    <div class="standing-row">
+      <div class="standing-rank">5</div>
+      <div class="standing-name" style="flex:1;">Istres</div>
+      <div style="display:flex;gap:16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--text2);">
+        <span style="min-width:20px;text-align:center;">14</span>
+        <span style="min-width:20px;text-align:center;">6</span>
+        <span style="min-width:20px;text-align:center;">8</span>
+        <span style="min-width:24px;text-align:center;color:var(--text);font-weight:900;">20</span>
+      </div>
+    </div>
+    <div class="standing-row">
+      <div class="standing-rank">6</div>
+      <div class="standing-name" style="flex:1;">Arles BC</div>
+      <div style="display:flex;gap:16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--text2);">
+        <span style="min-width:20px;text-align:center;">14</span>
+        <span style="min-width:20px;text-align:center;">4</span>
+        <span style="min-width:20px;text-align:center;">10</span>
+        <span style="min-width:24px;text-align:center;color:var(--text);font-weight:900;">18</span>
+      </div>
+    </div>
+    <div style="text-align:center;padding:16px;">
+      <a href="https://competitions.ffbb.com/ligues/sud/comites/0013" target="_blank" style="display:inline-block;background:none;border:1px solid var(--border2);color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:10px 24px;text-decoration:none;">
+        Voir classement FFBB ↗
+      </a>
+    </div>
+  </div>
+  <div class="pb-safe"></div>
+</div>
+
+<!-- ÉQUIPES -->
+<div class="panel" id="panel-teams">
+  <div class="section-hd" style="padding-top:20px;">
+    <span class="section-hd-title">Nos équipes</span>
+    <span style="font-size:11px;color:var(--text3);font-weight:500;">2025-2026</span>
+  </div>
+  <div class="team-grid">
+    <div class="team-card active-team" onclick="openTeam('seniors-m')">
+      <span class="team-card-cat">Seniors</span>
+      <span class="team-card-label">Masculins</span>
+      <div class="team-card-count">12 joueurs · 2 coachs</div>
+    </div>
+    <div class="team-card" onclick="openTeam('seniors-f')">
+      <span class="team-card-cat">Seniors</span>
+      <span class="team-card-label">Féminines</span>
+      <div class="team-card-count">10 joueuses</div>
+    </div>
+    <div class="team-card" onclick="openTeam('u18')">
+      <span class="team-card-cat">U18</span>
+      <span class="team-card-label">Juniors</span>
+      <div class="team-card-count">12 joueurs</div>
+    </div>
+    <div class="team-card" onclick="openTeam('u15')">
+      <span class="team-card-cat">U15</span>
+      <span class="team-card-label">Minimes</span>
+      <div class="team-card-count">14 joueurs</div>
+    </div>
+    <div class="team-card" onclick="openTeam('u13')">
+      <span class="team-card-cat">U13</span>
+      <span class="team-card-label">Benjamins</span>
+      <div class="team-card-count">16 joueurs</div>
+    </div>
+    <div class="team-card" onclick="openTeam('u11')">
+      <span class="team-card-cat">U11</span>
+      <span class="team-card-label">Poussins</span>
+      <div class="team-card-count">18 joueurs</div>
+    </div>
+    <div class="team-card" onclick="openTeam('u9')">
+      <span class="team-card-cat">U9</span>
+      <span class="team-card-label">Mini-poussins</span>
+      <div class="team-card-count">14 joueurs</div>
+    </div>
+    <div class="team-card" onclick="openTeam('u7')">
+      <span class="team-card-cat">U7</span>
+      <span class="team-card-label">Baby basket</span>
+      <div class="team-card-count">12 joueurs</div>
+    </div>
+    <div class="team-card" onclick="openTeam('u5')">
+      <span class="team-card-cat">U5</span>
+      <span class="team-card-label">Éveil</span>
+      <div class="team-card-count">8 joueurs</div>
+    </div>
+    <div class="team-card" onclick="openTeam('loisirs')" style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;text-align:left;padding:14px 16px;">
+      <div>
+        <span class="team-card-cat" style="font-size:20px;">Loisirs</span>
+        <span class="team-card-label" style="display:block;">Basket plaisir</span>
+        <div class="team-card-count">Tous niveaux · Inscriptions ouvertes</div>
+      </div>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+    </div>
+  </div>
+  <div class="pb-safe"></div>
+</div>
+
+<!-- MÉDIAS -->
+<div class="panel" id="panel-media">
+  <div class="media-subtabs">
+    <button class="media-subtab active" onclick="switchMediaTab(this,'photos-tab')">Photos</button>
+    <button class="media-subtab" onclick="switchMediaTab(this,'videos-tab')">Vidéos</button>
+    <button class="media-subtab" onclick="switchMediaTab(this,'highlights-tab')">Highlights</button>
+  </div>
+
+  <!-- Photos -->
+  <div class="media-subpanel active" id="photos-tab">
+    <div style="padding:12px 16px 8px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;">
+      <button style="flex-shrink:0;padding:6px 12px;background:var(--red);border:none;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Tous</button>
+      <button style="flex-shrink:0;padding:6px 12px;background:none;border:1px solid var(--border2);color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Seniors</button>
+      <button style="flex-shrink:0;padding:6px 12px;background:none;border:1px solid var(--border2);color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Jeunes</button>
+      <button style="flex-shrink:0;padding:6px 12px;background:none;border:1px solid var(--border2);color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Évènements</button>
+      <button style="flex-shrink:0;padding:6px 12px;background:none;border:1px solid var(--border2);color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">50 ans</button>
+    </div>
+    <div class="photo-grid">
+      <div class="photo-cell"><span style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0.6;">SM</span><div class="photo-overlay">J14 vs Arles</div></div>
+      <div class="photo-cell"><span style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0.6;">SR</span><div class="photo-overlay">Seniors M</div></div>
+      <div class="photo-cell"><span style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0.6;">50</span><div class="photo-overlay">50 ans</div></div>
+      <div class="photo-cell"><span style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0.6;">U13</span><div class="photo-overlay">U13</div></div>
+      <div class="photo-cell"><span style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0.6;">EVT</span><div class="photo-overlay">Gala</div></div>
+      <div class="photo-cell"><span style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0.6;">POD</span><div class="photo-overlay">Podium</div></div>
+      <div class="photo-cell"><span style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0.6;">TRN</span><div class="photo-overlay">Training</div></div>
+      <div class="photo-cell"><span style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0.6;">U15</span><div class="photo-overlay">U15 F</div></div>
+      <div class="photo-cell"><span style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0.6;">EQP</span><div class="photo-overlay">Équipement</div></div>
+    </div>
+    <div style="text-align:center;padding:20px;">
+      <button style="background:none;border:1px solid var(--border2);color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:12px 28px;cursor:pointer;">Charger plus</button>
+    </div>
+  </div>
+
+  <!-- Vidéos -->
+  <div class="media-subpanel" id="videos-tab">
+    <div class="video-list">
+      <div class="video-row">
+        <div class="video-thumb" style="background:var(--bg3);border:1px solid var(--border2);"><div class="play-icon">▶</div></div>
+        <div class="video-info">
+          <div class="video-title">CBC vs Arles — Match complet J14</div>
+          <div class="video-meta">Seniors M · 1h 24min · 24 mai 2026</div>
+        </div>
+      </div>
+      <div class="video-row">
+        <div class="video-thumb" style="background:var(--bg3);border:1px solid var(--border2);"><div class="play-icon">▶</div></div>
+        <div class="video-info">
+          <div class="video-title">Conférence de presse — 50 ans du CBC</div>
+          <div class="video-meta">Club · 18min · 20 mai 2026</div>
+        </div>
+      </div>
+      <div class="video-row">
+        <div class="video-thumb" style="background:var(--bg3);border:1px solid var(--border2);"><div class="play-icon">▶</div></div>
+        <div class="video-info">
+          <div class="video-title">U13 — Tournoi de Martigues</div>
+          <div class="video-meta">U13 · 45min · 18 mai 2026</div>
+        </div>
+      </div>
+      <div class="video-row">
+        <div class="video-thumb" style="background:var(--bg3);border:1px solid var(--border2);"><div class="play-icon">▶</div></div>
+        <div class="video-info">
+          <div class="video-title">Gala anniversaire 50 ans — Soirée officielle</div>
+          <div class="video-meta">Évènement · 2h 05min · 10 mai 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Highlights -->
+  <div class="media-subpanel" id="highlights-tab">
+    <div style="padding:14px 16px 4px;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);">Les meilleures actions</div>
+    <div class="highlight-scroll">
+      <div class="highlight-card">
+        <div class="highlight-thumb" style="background:linear-gradient(135deg,var(--bg4),var(--bg3));"><div class="play-icon" style="position:absolute;width:32px;height:32px;background:rgba(204,31,31,0.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">▶</div><div class="highlight-duration">0:42</div></div>
+        <div class="highlight-info">
+          <div class="highlight-title">Alley-oop J14 vs Arles</div>
+          <div class="highlight-date">24 mai 2026</div>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-thumb" style="background:linear-gradient(135deg,var(--bg4),var(--bg3));"><div class="play-icon" style="position:absolute;width:32px;height:32px;background:rgba(204,31,31,0.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">▶</div><div class="highlight-duration">1:15</div></div>
+        <div class="highlight-info">
+          <div class="highlight-title">Triple clutch J12 vs Fos</div>
+          <div class="highlight-date">10 mai 2026</div>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-thumb" style="background:linear-gradient(135deg,var(--bg4),var(--bg3));"><div class="play-icon" style="position:absolute;width:32px;height:32px;background:rgba(204,31,31,0.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">▶</div><div class="highlight-duration">0:28</div></div>
+        <div class="highlight-info">
+          <div class="highlight-title">Dunk du mois — Seniors</div>
+          <div class="highlight-date">5 mai 2026</div>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-thumb" style="background:linear-gradient(135deg,var(--bg4),var(--bg3));"><div class="play-icon" style="position:absolute;width:32px;height:32px;background:rgba(204,31,31,0.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">▶</div><div class="highlight-duration">2:10</div></div>
+        <div class="highlight-info">
+          <div class="highlight-title">Top 5 — Saison 2025-2026</div>
+          <div class="highlight-date">1 mai 2026</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 16px;">
+      <div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin:16px 0 8px;">Jeunes catégories</div>
+    </div>
+    <div class="highlight-scroll">
+      <div class="highlight-card">
+        <div class="highlight-thumb" style="background:linear-gradient(135deg,var(--bg4),var(--bg3));"><div class="play-icon" style="position:absolute;width:32px;height:32px;background:rgba(204,31,31,0.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">▶</div><div class="highlight-duration">0:55</div></div>
+        <div class="highlight-info">
+          <div class="highlight-title">U13 — Buzzer beater</div>
+          <div class="highlight-date">18 mai 2026</div>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-thumb" style="background:linear-gradient(135deg,var(--bg4),var(--bg3));"><div class="play-icon" style="position:absolute;width:32px;height:32px;background:rgba(204,31,31,0.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">▶</div><div class="highlight-duration">1:30</div></div>
+        <div class="highlight-info">
+          <div class="highlight-title">U15 F — Remontada</div>
+          <div class="highlight-date">12 mai 2026</div>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-thumb" style="background:linear-gradient(135deg,var(--bg4),var(--bg3));"><div class="play-icon" style="position:absolute;width:32px;height:32px;background:rgba(204,31,31,0.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">▶</div><div class="highlight-duration">0:35</div></div>
+        <div class="highlight-info">
+          <div class="highlight-title">U9 — Premier panier</div>
+          <div class="highlight-date">8 mai 2026</div>
+        </div>
+      </div>
+    </div>
+    <div class="pb-safe"></div>
+  </div>
+</div>
+
+<!-- PARTENAIRES -->
+<div class="panel" id="panel-partners">
+  <div class="partners-hero">
+    <h2>Nos partenaires</h2>
+    <p>Ils soutiennent le CBC Mammouth</p>
+  </div>
+
+  <div class="partner-tier">
+    <div class="partner-tier-title tier-gold">Partenaires Titre</div>
+    <div class="partner-card">
+      <div class="partner-logo-box"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg></div>
+      <div class="partner-info">
+        <div class="partner-name">Intermarché</div>
+        <div class="partner-type">Super · Saint-Martin-de-Crau</div>
+      </div>
+      <span class="partner-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </div>
+    <div class="partner-card">
+      <div class="partner-logo-box"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="partner-info">
+        <div class="partner-name">Nestenn</div>
+        <div class="partner-type">Groupe d'agences immobilières</div>
+      </div>
+      <span class="partner-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </div>
+  </div>
+
+  <div class="partner-tier">
+    <div class="partner-tier-title tier-silver">Partenaires Officiels</div>
+    <div class="partner-card">
+      <div class="partner-logo-box"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="20" y2="16"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg></div>
+      <div class="partner-info">
+        <div class="partner-name">CMI Coaching Pro</div>
+        <div class="partner-type">Préparation physique</div>
+      </div>
+      <span class="partner-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </div>
+    <div class="partner-card">
+      <div class="partner-logo-box"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div>
+      <div class="partner-info">
+        <div class="partner-name">Lekyk's Tacos</div>
+        <div class="partner-type">Restauration · Tacos · Burgers</div>
+      </div>
+      <span class="partner-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </div>
+  </div>
+
+  <div class="partner-tier">
+    <div class="partner-tier-title">Équipementier</div>
+    <div class="partner-card">
+      <div class="partner-logo-box"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="partner-info">
+        <div class="partner-name">Nike</div>
+        <div class="partner-type">Équipementier officiel</div>
+      </div>
+      <span class="partner-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </div>
+  </div>
+
+  <div style="margin:24px 16px;padding:16px;background:var(--surface);border:1px solid var(--border);text-align:center;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text2);margin-bottom:8px;">Devenir partenaire</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:14px;line-height:1.6;">Rejoignez l'aventure CBC pour la saison 2026-2027. Contactez la direction du club.</div>
+    <button style="background:var(--red);color:#fff;border:none;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:11px 24px;cursor:pointer;">Nous contacter</button>
+  </div>
+  <div class="pb-safe"></div>
+</div>
+
+<!-- COACH -->
+<div class="panel" id="panel-coach">
+
+  <!-- AUTH GATE -->
+  <div id="coach-auth-gate" class="coach-auth-gate">
+    <div class="coach-auth-emblem">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    </div>
+    <div class="coach-auth-title">Espace Club</div>
+    <div class="coach-auth-sub">Connecte-toi pour acceder a tes programmes, messages de ton coach et a l'espace staff.</div>
+    <button class="cbc-btn-primary" style="width:auto;padding:13px 32px;" onclick="document.getElementById('cbc-auth-modal').classList.add('open')">Se connecter</button>
+  </div>
+
+  <!-- COACH LOGGED IN -->
+  <div id="coach-logged" class="coach-logged">
+
+    <div class="coach-role-bar">
+      <div class="coach-role-info">
+        <div class="coach-role-avatar" id="crole-avatar">?</div>
+        <div>
+          <div class="coach-role-name" id="crole-name">...</div>
+          <div class="coach-role-tag" id="crole-tag">Membre</div>
+        </div>
+      </div>
+      <button class="coach-logout-btn" onclick="cbcLogout()">Deco.</button>
+    </div>
+
+    <div class="coach-subnav" id="coach-subnav"></div>
+
+    <!-- Mon Coach (joueur) -->
+    <div class="coach-subpanel active" id="csp-moncoach">
+      <div class="c-section-title">Messages &amp; Programmes</div>
+      <div id="cv-content"><div class="c-loading">Chargement...</div></div>
+    </div>
+
+    <!-- Membres -->
+    <div class="coach-subpanel" id="csp-membres">
+      <div class="c-section-title">Membres inscrits</div>
+      <div id="admin-members-list"><div class="c-loading">Chargement...</div></div>
+    </div>
+
+    <!-- Composer -->
+    <div class="coach-subpanel" id="csp-compose">
+      <div class="compose-wrap">
+        <div class="compose-field">
+          <label>Type</label>
+          <div class="compose-type-toggle">
+            <button class="compose-type-btn active" id="ctype-msg" onclick="cbcSetComposeType('message')">Message</button>
+            <button class="compose-type-btn" id="ctype-drill" onclick="cbcSetComposeType('programme')">Programme</button>
+          </div>
+        </div>
+        <div class="compose-field">
+          <label>Destinataires</label>
+          <div class="broadcast-bar">
+            <input type="checkbox" id="cbc-broadcast" onchange="cbcToggleBroadcast(this.checked)">
+            <label for="cbc-broadcast" style="font-size:12px;color:var(--text2);cursor:pointer;letter-spacing:0;text-transform:none;margin-bottom:0;">Envoyer a tous mes joueurs</label>
+          </div>
+          <div id="cbc-recipient-chips" class="recipient-chips"></div>
+          <select id="cbc-member-select" onchange="cbcAddRecipientFromSelect(this)" style="display:none;">
+            <option value="">- Ajouter un joueur -</option>
+          </select>
+        </div>
+        <div class="compose-field">
+          <label>Objet</label>
+          <input type="text" id="cbc-subject" placeholder="Ex : Seance de mardi, Objectif playoffs...">
+        </div>
+        <div id="cbc-msg-section">
+          <div class="compose-field">
+            <label>Message</label>
+            <textarea id="cbc-message" rows="5" placeholder="Ecris ton message ici..."></textarea>
+          </div>
+        </div>
+        <div id="cbc-drill-section" style="display:none;">
+          <div class="compose-field">
+            <label>Note du coach (optionnel)</label>
+            <textarea id="cbc-drill-note" rows="3" placeholder="Contexte, objectifs, motivation..."></textarea>
+          </div>
+          <div class="compose-field">
+            <label>Exercices</label>
+            <div id="cbc-drill-blocks" class="drill-blocks"></div>
+            <button class="add-drill-btn" onclick="cbcAddDrillBlock()">+ Ajouter un exercice</button>
+          </div>
+        </div>
+        <button class="cbc-btn-primary" onclick="cbcSendMessage()">Envoyer</button>
+        <p class="c-status" id="cbc-compose-status"></p>
+      </div>
+    </div>
+
+    <!-- Envoyes -->
+    <div class="coach-subpanel" id="csp-envoyes">
+      <div class="c-section-title">Messages envoyes</div>
+      <div id="admin-sent-list"><div class="c-loading">Chargement...</div></div>
+    </div>
+
+  </div>
+  <div class="pb-safe"></div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="cbc-modal-overlay" id="cbc-auth-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="cbc-modal">
+    <div class="cbc-modal-top"></div>
+    <div class="cbc-modal-head">
+      <div class="cbc-modal-title">Espace Club</div>
+      <button class="cbc-modal-close" onclick="document.getElementById('cbc-auth-modal').classList.remove('open')">x</button>
+    </div>
+    <div class="cbc-auth-tabs">
+      <button class="cbc-auth-tab active" onclick="cbcSwitchAuthTab('login')">Connexion</button>
+      <button class="cbc-auth-tab" onclick="cbcSwitchAuthTab('signup')">Creer un compte</button>
+    </div>
+    <div class="cbc-auth-view active" id="cbc-view-login">
+      <div class="cbc-field">
+        <label>Email</label>
+        <input type="email" id="cbc-login-email" placeholder="prenom.nom@email.com" autocomplete="email">
+      </div>
+      <div class="cbc-field">
+        <label>Mot de passe</label>
+        <input type="password" id="cbc-login-pw" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password">
+      </div>
+      <button class="cbc-forgot" onclick="cbcSwitchAuthTab('forgot')">Mot de passe oublie ?</button>
+      <button class="cbc-btn-primary" onclick="cbcLogin()">Se connecter</button>
+      <p class="cbc-auth-status" id="cbc-login-status"></p>
+    </div>
+    <div class="cbc-auth-view" id="cbc-view-signup">
+      <div class="cbc-field">
+        <label>Prenom &amp; Nom</label>
+        <input type="text" id="cbc-signup-name" placeholder="Yannis Medjbar" autocomplete="name">
+      </div>
+      <div class="cbc-field">
+        <label>Email</label>
+        <input type="email" id="cbc-signup-email" placeholder="prenom.nom@email.com" autocomplete="email">
+      </div>
+      <div class="cbc-field">
+        <label>Mot de passe</label>
+        <input type="password" id="cbc-signup-pw" placeholder="Min. 8 caracteres" autocomplete="new-password">
+      </div>
+      <button class="cbc-btn-primary" onclick="cbcSignup()">Creer mon compte</button>
+      <p class="cbc-auth-status" id="cbc-signup-status"></p>
+    </div>
+    <div class="cbc-auth-view" id="cbc-view-forgot">
+      <button class="cbc-forgot" style="text-align:left;margin-bottom:14px;" onclick="cbcSwitchAuthTab('login')">- Retour connexion</button>
+      <div class="cbc-field">
+        <label>Email</label>
+        <input type="email" id="cbc-forgot-email" placeholder="prenom.nom@email.com" autocomplete="email">
+      </div>
+      <button class="cbc-btn-primary" onclick="cbcResetPw()">Envoyer le lien</button>
+      <p class="cbc-auth-status" id="cbc-forgot-status"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ BOTTOM NAV ══════════ -->
+<div class="bottom-nav">
+  <button class="nav-item active" id="nav-home" onclick="showPanel('home')">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+    <span>Accueil</span>
+  </button>
+  <button class="nav-item" id="nav-competitions" onclick="showPanel('competitions')">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+    <span>Compétitions</span>
+  </button>
+  <button class="nav-item" id="nav-teams" onclick="showPanel('teams')">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span>
+    <span>Équipes</span>
+  </button>
+  <button class="nav-item" id="nav-media" onclick="showPanel('media')">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
+    <span>Médias</span>
+  </button>
+  <button class="nav-item" id="nav-partners" onclick="showPanel('partners')">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></span>
+    <span>Partenaires</span>
+  </button>
+  <button class="nav-item" id="nav-coach" onclick="showPanel('coach')">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l4.24 4.24"/><path d="M14.83 9.17l4.24-4.24"/><path d="M14.83 14.83l4.24 4.24"/><path d="M9.17 14.83l-4.24 4.24"/><path d="M12 2v20"/><path d="M2 12h20"/></svg></span>
+    <span>Coach</span>
+  </button>
+</div>
+
+<!-- ══════════ JS ══════════ -->
+<script>
+/* panels */
+function showPanel(id) {
+  var panels = document.querySelectorAll('.panel');
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].classList.remove('active');
+  }
+  var p = document.getElementById('panel-' + id);
+  if (p) p.classList.add('active');
+
+  var navItems = document.querySelectorAll('.nav-item');
+  for (var j = 0; j < navItems.length; j++) {
+    navItems[j].classList.remove('active');
+  }
+  var n = document.getElementById('nav-' + id);
+  if (n) n.classList.add('active');
+
+  window.scrollTo(0, 0);
+}
+
+function navTo(id) { showPanel(id); }
+
+/* comp team selector */
+function selectCompTeam(btn) {
+  var btns = document.querySelectorAll('.comp-team-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.remove('active');
+  }
+  btn.classList.add('active');
+}
+
+/* comp sub tabs */
+function switchCompTab(btn, tabId) {
+  var btns = document.querySelectorAll('.comp-subtab');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.remove('active');
+  }
+  btn.classList.add('active');
+  var pans = document.querySelectorAll('.comp-subpanel');
+  for (var j = 0; j < pans.length; j++) {
+    pans[j].classList.remove('active');
+  }
+  var t = document.getElementById(tabId);
+  if (t) t.classList.add('active');
+}
+
+/* media sub tabs */
+function switchMediaTab(btn, tabId) {
+  var btns = document.querySelectorAll('.media-subtab');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.remove('active');
+  }
+  btn.classList.add('active');
+  var pans = document.querySelectorAll('.media-subpanel');
+  for (var j = 0; j < pans.length; j++) {
+    pans[j].classList.remove('active');
+  }
+  var t = document.getElementById(tabId);
+  if (t) t.classList.add('active');
+}
+
+/* story tap */
+function openStory(id) {
+  var map = {
+    'resultats': 'competitions',
+    'prochains': 'competitions',
+    'highlights': 'media',
+    'classement': 'competitions',
+    'effectif': 'teams',
+    'galerie': 'media',
+    'partenaires': 'partners'
+  };
+  if (map[id]) showPanel(map[id]);
+}
+
+/* team open */
+function openTeam(id) {
+  showPanel('teams');
+}
+
+/* theme */
+function toggleTheme() {
+  var isLight = document.body.classList.toggle('light');
+  document.getElementById('themeBtn').textContent = isLight ? '🌕' : '🌙';
+  try { localStorage.setItem('cbcTheme', isLight ? 'light' : 'dark'); } catch(e) {}
+}
+(function() {
+  try {
+    if (localStorage.getItem('cbcTheme') === 'light') {
+      document.body.classList.add('light');
+      var btn = document.getElementById('themeBtn');
+      if (btn) btn.textContent = '🌕';
+    }
+  } catch(e) {}
+})();
+
+/* countdown */
+function updateCountdown() {
+  var target = new Date('2026-06-07T18:00:00');
+  var now = new Date();
+  var diff = target - now;
+  if (diff <= 0) {
+    document.getElementById('cd-j').textContent = '0';
+    document.getElementById('cd-h').textContent = '0';
+    document.getElementById('cd-m').textContent = '0';
+    return;
+  }
+  var days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  document.getElementById('cd-j').textContent = days;
+  document.getElementById('cd-h').textContent = hours;
+  document.getElementById('cd-m').textContent = mins;
+}
+updateCountdown();
+setInterval(updateCountdown, 60000);
+
+/* ══════════════════════════════════
+   CBC COACH SYSTEM - Supabase Auth + Messagerie
+   Remplace SUPABASE_URL et SUPABASE_ANON_KEY
+   Table Supabase requise: cbc_messages + profiles
+══════════════════════════════════ */
+(function() {
+
+  var SUPABASE_URL      = 'https://stvetdjsisxbrsuthnhj.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0dmV0ZGpzaXN4YnJzdXRobmhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNDMzOTcsImV4cCI6MjA5NTYxOTM5N30.GcKQ0wrWMX_mS6dho_AjAbu0SONJrZmKXzw5NQWuTp8';
+  var ADMIN_EMAIL       = 'medjbaryannis@gmail.com';
+  var COACH_EMAILS      = [];
+  var PHYSIO_EMAILS     = [];
+
+  var supa = null;
+  function initSupa() {
+    if (supa) return;
+    if (typeof window.supabase !== 'undefined') {
+      supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  }
+
+  function initials(str) {
+    if (!str) return '?';
+    var parts = str.trim().split(' ');
+    return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+  }
+  function fmtDate(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+  }
+  function getRoleFromEmail(email) {
+    if (!email) return 'joueur';
+    if (email === ADMIN_EMAIL) return 'admin';
+    if (COACH_EMAILS.indexOf(email) > -1) return 'coach';
+    if (PHYSIO_EMAILS.indexOf(email) > -1) return 'physio';
+    return 'joueur';
+  }
+  function setAuthStatus(id, msg, ok) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'cbc-auth-status ' + (ok ? 'ok' : 'err');
+  }
+  function setCStatus(msg, ok) {
+    var el = document.getElementById('cbc-compose-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'c-status ' + (ok ? 'ok' : 'err');
+  }
+
+  window.cbcSwitchAuthTab = function(tab) {
+    ['login','signup','forgot'].forEach(function(t) {
+      var v = document.getElementById('cbc-view-' + t);
+      if (v) v.classList.toggle('active', t === tab);
+    });
+    document.querySelectorAll('.cbc-auth-tab').forEach(function(b) {
+      var onclick = b.getAttribute('onclick') || '';
+      b.classList.toggle('active', onclick.indexOf(tab) > -1);
+    });
+  };
+
+  window.cbcLogin = async function() {
+    initSupa();
+    if (!supa) { setAuthStatus('cbc-login-status','Supabase non configure.',false); return; }
+    var email = document.getElementById('cbc-login-email').value.trim();
+    var pw    = document.getElementById('cbc-login-pw').value;
+    if (!email || !pw) { setAuthStatus('cbc-login-status','Email et mot de passe requis.',false); return; }
+    setAuthStatus('cbc-login-status','Connexion...', true);
+    var res = await supa.auth.signInWithPassword({ email: email, password: pw });
+    if (res.error) { setAuthStatus('cbc-login-status', res.error.message, false); return; }
+    document.getElementById('cbc-auth-modal').classList.remove('open');
+    cbcOnLogin(res.data.session);
+  };
+
+  window.cbcSignup = async function() {
+    initSupa();
+    if (!supa) { setAuthStatus('cbc-signup-status','Supabase non configure.',false); return; }
+    var name  = document.getElementById('cbc-signup-name').value.trim();
+    var email = document.getElementById('cbc-signup-email').value.trim();
+    var pw    = document.getElementById('cbc-signup-pw').value;
+    if (!name || !email || !pw) { setAuthStatus('cbc-signup-status','Tous les champs requis.',false); return; }
+    if (pw.length < 8) { setAuthStatus('cbc-signup-status','Mot de passe : 8 car. minimum.',false); return; }
+    setAuthStatus('cbc-signup-status','Creation...', true);
+    var res = await supa.auth.signUp({ email:email, password:pw, options:{ data:{ full_name:name } } });
+    if (res.error) { setAuthStatus('cbc-signup-status', res.error.message, false); return; }
+    setAuthStatus('cbc-signup-status','Compte cree ! Verifie ton email.', true);
+  };
+
+  window.cbcResetPw = async function() {
+    initSupa();
+    if (!supa) { setAuthStatus('cbc-forgot-status','Supabase non configure.',false); return; }
+    var email = document.getElementById('cbc-forgot-email').value.trim();
+    if (!email) { setAuthStatus('cbc-forgot-status','Email requis.',false); return; }
+    setAuthStatus('cbc-forgot-status','Envoi...', true);
+    var res = await supa.auth.resetPasswordForEmail(email);
+    if (res.error) { setAuthStatus('cbc-forgot-status', res.error.message, false); return; }
+    setAuthStatus('cbc-forgot-status','Lien envoye ! Verifie ton email.', true);
+  };
+
+  window.cbcLogout = async function() {
+    initSupa();
+    if (supa) await supa.auth.signOut();
+    document.getElementById('coach-auth-gate').style.display = '';
+    document.getElementById('coach-logged').classList.remove('active');
+  };
+
+  function cbcOnLogin(session) {
+    if (!session) return;
+    var email = session.user.email;
+    var name  = (session.user.user_metadata && session.user.user_metadata.full_name) ? session.user.user_metadata.full_name : email;
+    var role  = getRoleFromEmail(email);
+    document.getElementById('coach-auth-gate').style.display = 'none';
+    document.getElementById('coach-logged').classList.add('active');
+    document.getElementById('crole-avatar').textContent = initials(name);
+    document.getElementById('crole-name').textContent   = name;
+    var tagEl = document.getElementById('crole-tag');
+    var tagLabels = { admin:'Administrateur', coach:'Coach', physio:'Prepa physique', joueur:'Membre' };
+    tagEl.textContent = tagLabels[role] || 'Membre';
+    tagEl.className   = 'coach-role-tag ' + role;
+    buildSubnav(role);
+    cbcSwitchCoachTab('moncoach');
+    loadVirtualCoach(session.user.id);
+    if (role === 'admin' || role === 'coach' || role === 'physio') {
+      loadMembers(session.user.id, role);
+    }
+  }
+
+  function buildSubnav(role) {
+    var nav  = document.getElementById('coach-subnav');
+    var tabs = [{ id:'moncoach', label:'Mon Coach' }];
+    if (role === 'admin' || role === 'coach' || role === 'physio') {
+      tabs.push({ id:'membres', label:'Joueurs' });
+      tabs.push({ id:'compose', label:'Nouveau' });
+      tabs.push({ id:'envoyes', label:'Envoyes' });
+    }
+    nav.innerHTML = tabs.map(function(t,i) {
+      return '<button class="coach-subnav-btn' + (i===0?' active':'') + '" onclick="cbcSwitchCoachTab(\'' + t.id + '\')">' + t.label + '</button>';
+    }).join('');
+  }
+
+  window.cbcSwitchCoachTab = function(name) {
+    document.querySelectorAll('.coach-subpanel').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('#coach-subnav .coach-subnav-btn').forEach(function(b){
+      b.classList.toggle('active', (b.getAttribute('onclick') || '').indexOf(name) > -1);
+    });
+    var panel = document.getElementById('csp-' + name);
+    if (panel) panel.classList.add('active');
+    if (name === 'envoyes') loadSentMessages();
+  };
+
+  async function loadVirtualCoach(userId) {
+    initSupa();
+    var cv = document.getElementById('cv-content');
+    if (!cv) return;
+    if (!supa) { cv.innerHTML = '<div class="c-loading">Supabase non configure.</div>'; return; }
+    var res = await supa.from('cbc_messages')
+      .select('*').or('recipient_id.eq.' + userId + ',broadcast.eq.true')
+      .order('created_at', { ascending: false }).limit(30);
+    if (!res.data || !res.data.length) {
+      cv.innerHTML = '<div class="cv-empty"><div class="cv-empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24M12 2v20M2 12h20"/></svg></div><div class="cv-empty-title">Pas encore de message</div><div class="cv-empty-desc">Ton coach t\'enverra bientot son premier programme ou message.</div></div>';
+      return;
+    }
+    cv.innerHTML = res.data.map(function(m) {
+      if (m.type === 'programme') {
+        var exs = ((m.body && m.body.exercises) ? m.body.exercises : []).map(function(e) {
+          var tc = (e.type||'').toLowerCase();
+          var vol = [e.sets, e.reps].filter(Boolean).join(' x ');
+          return '<div class="cv-drill-item"><span class="cv-drill-type ' + tc + '">' + (e.type||'Drill') + '</span><span class="cv-drill-name">' + (e.name||'') + '</span>' + (vol ? '<span class="cv-drill-detail">' + vol + '</span>' : '') + '</div>';
+        }).join('');
+        var note = (m.body && m.body.note) ? '<div class="cv-msg-body" style="margin-bottom:10px;">' + m.body.note + '</div>' : '';
+        return '<div class="cv-msg-card drill-card"><div class="cv-msg-inner"><div class="cv-msg-from">Programme — Coach</div><div class="cv-msg-title">' + (m.subject||'Programme') + '</div>' + note + exs + '</div><div class="cv-msg-date">' + fmtDate(m.created_at) + '</div></div>';
+      }
+      var txt = (m.body && m.body.text) ? m.body.text.replace(/\n/g,'<br>') : '';
+      return '<div class="cv-msg-card"><div class="cv-msg-inner"><div class="cv-msg-from">Message — Coach</div><div class="cv-msg-title">' + (m.subject||'Message') + '</div><div class="cv-msg-body">' + txt + '</div></div><div class="cv-msg-date">' + fmtDate(m.created_at) + '</div></div>';
+    }).join('');
+  }
+
+  var _members = [];
+  async function loadMembers(userId, role) {
+    initSupa();
+    var list = document.getElementById('admin-members-list');
+    if (!supa) { if(list) list.innerHTML = '<div class="c-loading">Supabase non configure.</div>'; return; }
+    var res = await supa.from('profiles').select('id,full_name,email,role,team').order('full_name');
+    if (!res.data || !res.data.length) {
+      if(list) list.innerHTML = '<div class="cv-empty"><div class="cv-empty-title">Aucun membre</div></div>';
+      return;
+    }
+    _members = res.data;
+    if (list) {
+      list.innerHTML = _members.map(function(m) {
+        var r = m.role || 'joueur';
+        var bc = r==='admin'?'badge-admin':r==='coach'?'badge-coach2':r==='physio'?'badge-physio':'badge-actif';
+        var bl = r==='admin'?'Admin':r==='coach'?'Coach':r==='physio'?'Physio':'Joueur';
+        return '<div class="member-row" onclick="cbcSelectMember(\'' + m.id + '\',\'' + (m.full_name||m.email||'').replace(/'/g,"\\'") + '\')">'
+          + '<div class="member-avatar">' + initials(m.full_name||m.email) + '</div>'
+          + '<div class="member-info"><div class="member-name">' + (m.full_name||'—') + '</div>'
+          + '<div class="member-meta">' + (m.email||m.id) + (m.team?' · '+m.team:'') + '</div></div>'
+          + '<span class="member-badge ' + bc + '">' + bl + '</span>'
+          + '<span style="color:var(--text3);font-size:16px;">›</span></div>';
+      }).join('');
+    }
+    var sel = document.getElementById('cbc-member-select');
+    if (sel) {
+      sel.innerHTML = '<option value="">— Ajouter un joueur —</option>'
+        + _members.filter(function(m){ return (m.role||'joueur')==='joueur'; }).map(function(m) {
+          return '<option value="' + m.id + '" data-name="' + (m.full_name||m.email||'') + '">' + (m.full_name||m.email||'') + '</option>';
+        }).join('');
+      sel.style.display = '';
+    }
+  }
+
+  window.cbcSelectMember = function(id, name) {
+    cbcSwitchCoachTab('compose');
+    _broadcast = false;
+    document.getElementById('cbc-broadcast').checked = false;
+    _recipients = [{ id: id, name: name }];
+    renderChips();
+    setTimeout(function(){ var s = document.getElementById('cbc-subject'); if(s) s.focus(); }, 100);
+  };
+
+  var _composeType = 'message';
+  var _recipients  = [];
+  var _broadcast   = false;
+  var _drillId     = 0;
+
+  window.cbcSetComposeType = function(type) {
+    _composeType = type;
+    document.getElementById('ctype-msg').classList.toggle('active',   type==='message');
+    document.getElementById('ctype-drill').classList.toggle('active', type==='programme');
+    document.getElementById('cbc-msg-section').style.display   = type==='message'   ? '' : 'none';
+    document.getElementById('cbc-drill-section').style.display = type==='programme' ? '' : 'none';
+    if (type==='programme' && document.querySelectorAll('.drill-block').length===0) cbcAddDrillBlock();
+  };
+
+  window.cbcToggleBroadcast = function(checked) {
+    _broadcast = checked;
+    renderChips();
+  };
+
+  window.cbcAddRecipientFromSelect = function(sel) {
+    var val  = sel.value;
+    var opt  = sel.options[sel.selectedIndex];
+    var name = opt ? (opt.getAttribute('data-name') || val) : val;
+    if (!val) return;
+    if (_recipients.find(function(r){ return r.id===val; })) { sel.value=''; return; }
+    _recipients.push({ id: val, name: name });
+    renderChips();
+    sel.value = '';
+  };
+
+  function renderChips() {
+    var wrap = document.getElementById('cbc-recipient-chips');
+    if (!wrap) return;
+    wrap.innerHTML = _broadcast ? '' : _recipients.map(function(r) {
+      return '<div class="recipient-chip"><span>' + r.name + '</span><button class="chip-remove" onclick="cbcRemoveRecipient(\'' + r.id + '\')">x</button></div>';
+    }).join('');
+  }
+
+  window.cbcRemoveRecipient = function(id) {
+    _recipients = _recipients.filter(function(r){ return r.id !== id; });
+    renderChips();
+  };
+
+  window.cbcAddDrillBlock = function() {
+    var id   = 'db-' + (++_drillId);
+    var wrap = document.getElementById('cbc-drill-blocks');
+    if (!wrap) return;
+    var div  = document.createElement('div');
+    div.className = 'drill-block';
+    div.id = id;
+    div.innerHTML = '<input type="text" placeholder="Nom de l\'exercice" class="db-name">'
+      + '<select class="db-type"><option>Dribble</option><option>Tir</option><option>Defense</option><option>Physique</option><option>Tactique</option><option>Passe</option></select>'
+      + '<input type="text" placeholder="Series" class="db-sets">'
+      + '<input type="text" placeholder="Reps/min" class="db-reps">'
+      + '<button class="drill-block-remove" onclick="document.getElementById(\'' + id + '\').remove()">x</button>';
+    wrap.appendChild(div);
+  };
+
+  function collectDrillBlocks() {
+    return Array.from(document.querySelectorAll('.drill-block')).map(function(b) {
+      return { name: b.querySelector('.db-name').value.trim(), type: b.querySelector('.db-type').value, sets: b.querySelector('.db-sets').value.trim(), reps: b.querySelector('.db-reps').value.trim() };
+    }).filter(function(e){ return e.name; });
+  }
+
+  window.cbcSendMessage = async function() {
+    initSupa();
+    if (!supa) { setCStatus('Supabase non configure.', false); return; }
+    var subject = document.getElementById('cbc-subject').value.trim();
+    if (!subject) { setCStatus('Objet requis.', false); return; }
+    if (!_broadcast && !_recipients.length) { setCStatus('Selectionne au moins un joueur ou coche "Envoyer a tous".', false); return; }
+    var body;
+    if (_composeType === 'message') {
+      var txt = document.getElementById('cbc-message').value.trim();
+      if (!txt) { setCStatus('Le message est vide.', false); return; }
+      body = { text: txt };
+    } else {
+      var exercises = collectDrillBlocks();
+      if (!exercises.length) { setCStatus('Ajoute au moins un exercice.', false); return; }
+      body = { note: document.getElementById('cbc-drill-note').value.trim(), exercises: exercises };
+    }
+    var btn = document.querySelector('#csp-compose .cbc-btn-primary');
+    if (btn) { btn.textContent = '...'; btn.disabled = true; }
+    setCStatus('', true);
+    var sessionRes = await supa.auth.getSession();
+    var session = sessionRes.data && sessionRes.data.session;
+    if (!session) { setCStatus('Non connecte.', false); if(btn){btn.textContent='Envoyer';btn.disabled=false;} return; }
+    var rows = _broadcast
+      ? [{ coach_id: session.user.id, recipient_id: null, broadcast: true, subject: subject, type: _composeType, body: body }]
+      : _recipients.map(function(r){ return { coach_id: session.user.id, recipient_id: r.id, broadcast: false, subject: subject, type: _composeType, body: body }; });
+    var res = await supa.from('cbc_messages').insert(rows);
+    if (btn) { btn.textContent = 'Envoyer'; btn.disabled = false; }
+    if (res.error) { setCStatus(res.error.message, false); return; }
+    setCStatus('Message envoye !', true);
+    document.getElementById('cbc-subject').value = '';
+    document.getElementById('cbc-message').value = '';
+    document.getElementById('cbc-drill-note').value = '';
+    document.getElementById('cbc-drill-blocks').innerHTML = '';
+    _drillId=0; _recipients=[]; _broadcast=false;
+    var bc = document.getElementById('cbc-broadcast'); if(bc) bc.checked=false;
+    renderChips();
+    setTimeout(function(){ setCStatus('',''); }, 3000);
+  };
+
+  async function loadSentMessages() {
+    initSupa();
+    var list = document.getElementById('admin-sent-list');
+    if (!supa || !list) return;
+    list.innerHTML = '<div class="c-loading">Chargement...</div>';
+    var sessionRes = await supa.auth.getSession();
+    var session = sessionRes.data && sessionRes.data.session;
+    if (!session) return;
+    var res = await supa.from('cbc_messages').select('*').eq('coach_id', session.user.id).order('created_at',{ascending:false}).limit(50);
+    if (!res.data || !res.data.length) {
+      list.innerHTML = '<div class="cv-empty"><div class="cv-empty-title">Aucun message envoye</div></div>';
+      return;
+    }
+    list.innerHTML = res.data.map(function(m) {
+      var icon = m.type==='programme'
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>';
+      var found = _members.find(function(mb){ return mb.id===m.recipient_id; });
+      var dest  = m.broadcast ? 'Tous les joueurs' : (found ? (found.full_name||found.email||'Joueur') : 'Joueur');
+      var preview = m.type==='message'
+        ? ((m.body && m.body.text)||'').slice(0,80)
+        : ((m.body && m.body.exercises)||[]).map(function(e){return e.name;}).slice(0,3).join(' · ');
+      return '<div class="msg-row"><div class="msg-type-badge">' + icon + '</div>'
+        + '<div class="msg-body2"><div class="msg-title2">' + (m.subject||'Sans objet') + '</div>'
+        + '<div class="msg-meta2"><span>→ ' + dest + '</span><span>' + fmtDate(m.created_at) + '</span></div>'
+        + '<div class="msg-preview2">' + preview + '</div></div></div>';
+    }).join('');
+  }
+
+  /* ── Supabase SDK + init ── */
+  function loadSupabaseAndInit() {
+    if (typeof window.supabase !== 'undefined') {
+      initSupa();
+      supa.auth.getSession().then(function(res) {
+        if (res.data && res.data.session) cbcOnLogin(res.data.session);
+      });
+      supa.auth.onAuthStateChange(function(_ev, session) {
+        if (session) cbcOnLogin(session);
+      });
+      return;
+    }
+    var script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+    script.onload = function() {
+      initSupa();
+      supa.auth.getSession().then(function(res) {
+        if (res.data && res.data.session) cbcOnLogin(res.data.session);
+      });
+      supa.auth.onAuthStateChange(function(_ev, session) {
+        if (session) cbcOnLogin(session);
+      });
+    };
+    document.head.appendChild(script);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadSupabaseAndInit);
+  } else {
+    loadSupabaseAndInit();
+  }
+
+})();
+
+/* ══════════════════════════════════
+   SPLASH ANIMATION — 9 étapes
+══════════════════════════════════ */
+(function() {
+  function $(id) { return document.getElementById(id); }
+
+  function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+  function animate(el, from, to, duration, startTime, prop, unit, onDone) {
+    var start = startTime || performance.now();
+    function step(now) {
+      var t = Math.min((now - start) / duration, 1);
+      var v = from + (to - from) * ease(t);
+      if (prop === 'opacity') el.style.opacity = v;
+      else if (prop === 'scale') el.style.transform = 'scale(' + v + ')';
+      else if (prop === 'scaleY') el.style.transform = 'scaleX(' + v + ')';
+      else if (prop === 'width') el.style.width = v + (unit||'px');
+      if (t < 1) requestAnimationFrame(step);
+      else if (onDone) onDone();
+    }
+    requestAnimationFrame(step);
+  }
+
+  function spawnParticles() {
+    var container = $('splash-particles');
+    container.style.opacity = '1';
+    for (var i = 0; i < 28; i++) {
+      (function(i) {
+        var p = document.createElement('div');
+        p.className = 'splash-particle';
+        var angle = (Math.random() * 360) * Math.PI / 180;
+        var dist  = 80 + Math.random() * 180;
+        var dx = Math.cos(angle) * dist;
+        var dy = Math.sin(angle) * dist;
+        var x = 50 + (Math.random() - 0.5) * 40;
+        var y = 50 + (Math.random() - 0.5) * 30;
+        p.style.cssText = 'left:'+x+'%;top:'+y+'%;--dx:'+dx+'px;--dy:'+dy+'px;'
+          + 'width:'+(2+Math.random()*4)+'px;height:'+(2+Math.random()*4)+'px;'
+          + 'background:'+(Math.random()>0.5?'#CC1F1F':'#C8A45A')+';'
+          + 'animation: splashParticle '+(0.6+Math.random()*0.8)+'s ease-out '+(Math.random()*0.3)+'s forwards;';
+        container.appendChild(p);
+      })(i);
+    }
+  }
+
+  function runSplash() {
+    var splash   = $('cbc-splash');
+    var halo     = $('splash-halo');
+    var logo     = $('splash-logo');
+    var eyeGlow  = $('splash-eye-glow');
+    var tuskFlash= $('splash-tusk-flash');
+    var line     = $('splash-line');
+    var title    = $('splash-title');
+    var subtitle = $('splash-subtitle');
+    var img      = $('splash-img');
+
+    // Étape 1 — 0s: obscurité, petite lueur rouge centre
+    setTimeout(function() {
+      animate(halo, 0, 1, 400, null, 'opacity');
+      animate(halo, 0.3, 1, 400, null, 'scale');
+    }, 0);
+
+    // Étape 2 — 0.4s: logo émerge
+    setTimeout(function() {
+      logo.style.transform = 'scale(0.6)';
+      logo.style.opacity = '0';
+      var s = performance.now();
+      (function step(now) {
+        var t = Math.min((now - s) / 600, 1);
+        var e = ease(t);
+        logo.style.opacity = e;
+        logo.style.transform = 'scale(' + (0.6 + 0.4 * e) + ')';
+        if (t < 1) requestAnimationFrame(step);
+      })(performance.now());
+    }, 400);
+
+    // Étape 3 — 1.0s: léger mouvement tête
+    setTimeout(function() {
+      var s = performance.now();
+      (function step(now) {
+        var t = Math.min((now - s) / 500, 1);
+        var e = ease(t);
+        var scale = 1 + Math.sin(e * Math.PI) * 0.03;
+        var ty = -Math.sin(e * Math.PI) * 4;
+        logo.style.transform = 'scale(' + scale + ') translateY(' + ty + 'px)';
+        if (t < 1) requestAnimationFrame(step);
+        else logo.style.transform = 'scale(1) translateY(0)';
+      })(performance.now());
+    }, 1000);
+
+    // Étape 4 — 1.5s: yeux s'allument + glow rouge
+    setTimeout(function() {
+      animate(eyeGlow, 0, 1, 500, null, 'opacity');
+      // Intensifier le halo
+      var s = performance.now();
+      (function step(now) {
+        var t = Math.min((now - s) / 500, 1);
+        halo.style.transform = 'scale(' + (1 + ease(t) * 0.5) + ')';
+        halo.style.opacity = 0.7 + ease(t) * 0.3;
+        if (t < 1) requestAnimationFrame(step);
+      })(performance.now());
+    }, 1500);
+
+    // Étape 5 — 2.0s: reflet défenses + vibration
+    setTimeout(function() {
+      spawnParticles();
+      // Flash défenses
+      tuskFlash.style.opacity = '0';
+      tuskFlash.style.transition = 'opacity 0.08s ease-in';
+      setTimeout(function() {
+        tuskFlash.style.opacity = '0.9';
+        setTimeout(function() {
+          tuskFlash.style.opacity = '0.3';
+          setTimeout(function() { tuskFlash.style.opacity = '0'; }, 100);
+        }, 80);
+      }, 10);
+      // Vibration
+      logo.style.animation = 'splashVibrate 0.3s ease';
+      setTimeout(function() { logo.style.animation = ''; }, 300);
+    }, 2000);
+
+    // Étape 6 — 2.3s: logo se stabilise, halo discret
+    setTimeout(function() {
+      animate(halo, parseFloat(halo.style.opacity)||1, 0.4, 300, null, 'opacity');
+    }, 2300);
+
+    // Étape 7 — 2.5s: nom app apparaît
+    setTimeout(function() {
+      line.style.opacity = '1';
+      line.style.transition = 'none';
+      animate(line, 0, 180, 350, null, 'width', 'px');
+      setTimeout(function() {
+        animate(title, 0, 1, 400, null, 'opacity');
+        title.style.transform = 'translateY(8px)';
+        var s = performance.now();
+        (function step(now) {
+          var t = Math.min((now - s) / 400, 1);
+          title.style.transform = 'translateY(' + (8 - 8*ease(t)) + 'px)';
+          if (t < 1) requestAnimationFrame(step);
+        })(performance.now());
+      }, 150);
+      setTimeout(function() {
+        animate(subtitle, 0, 1, 300, null, 'opacity');
+      }, 350);
+    }, 2500);
+
+    // Étape 8 — 2.8s: pré-transition (fade léger)
+    setTimeout(function() {
+      logo.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+      logo.style.transform = 'scale(1.04)';
+    }, 2800);
+
+    // Étape 9 — 3.0s: ouverture app
+    setTimeout(function() {
+      splash.style.transition = 'opacity 0.4s ease';
+      splash.style.opacity = '0';
+      setTimeout(function() {
+        splash.classList.add('done');
+      }, 400);
+    }, 3000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runSplash);
+  } else {
+    runSplash();
+  }
+})();
+
+</script>
+</body>
+</html>
