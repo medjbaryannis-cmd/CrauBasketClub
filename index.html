@@ -1777,78 +1777,69 @@ body.light .video-thumb {
   }
 }
 
+
+/* ══════════════════════════════════
+   PREMIUM VIDEO SPLASH CBC
+══════════════════════════════════ */
+#cbc-premium-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: #050506;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#cbc-premium-splash.done {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .55s ease;
+}
+
+#cbcSplashVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #050506;
+}
+
+.cbc-splash-skip {
+  position: fixed;
+  right: 18px;
+  top: calc(18px + env(safe-area-inset-top, 0px));
+  z-index: 1000000;
+  color: rgba(255,255,255,.72);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.28);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
 </style>
 </head>
 <body>
 
-<!-- ══════════ SPLASH SCREEN ══════════ -->
-<div id="cbc-splash">
-  <div class="splash-smoke"></div>
-  <div class="splash-particles" id="splash-particles"></div>
-  <div class="splash-halo" id="splash-halo"></div>
-  <div class="splash-logo-wrap" id="splash-logo">
-    <img class="splash-logo-img" src="cbc_icon_512.png" id="splash-img"
-         onerror="this.style.display='none';document.getElementById('splash-svg').style.display='block'"
-         alt="CBC Mammouths">
-    <!-- SVG fallback logo -->
-    <svg id="splash-svg" style="display:block;width:220px;height:220px;" viewBox="0 0 300 290" xmlns="http://www.w3.org/2000/svg">
-      <!-- Contour blanc -->
-      <path d="M150 8 C90 8 40 50 35 105 Q30 145 42 175 Q20 210 22 250 Q24 268 45 265 Q68 262 80 235 Q100 260 130 272 Q150 280 170 272 Q200 260 220 235 Q232 262 255 265 Q276 268 278 250 Q280 210 258 175 Q270 145 265 105 Q260 50 210 18 Z" fill="white"/>
-      <!-- Fond noir -->
-      <path d="M150 18 C95 18 50 57 46 108 Q42 145 54 172 Q35 208 37 245 Q39 258 55 256 Q73 254 84 230 Q106 255 133 266 Q150 273 167 266 Q194 255 216 230 Q227 254 245 256 Q261 258 263 245 Q265 208 246 172 Q258 145 254 108 Q250 57 205 22 Z" fill="#0D0D0D"/>
-      <!-- Défenses gauche -->
-      <path d="M54 172 Q28 205 32 242 Q36 258 55 256 Q73 254 84 230 Q94 208 92 182" fill="white" stroke="#888" stroke-width="1"/>
-      <path d="M57 174 Q34 205 38 238 Q41 252 57 251 Q72 250 82 228 Q91 208 90 184" fill="#CCCCCC"/>
-      <!-- Défenses droite -->
-      <path d="M246 172 Q272 205 268 242 Q264 258 245 256 Q227 254 216 230 Q206 208 208 182" fill="white" stroke="#888" stroke-width="1"/>
-      <path d="M243 174 Q266 205 262 238 Q259 252 243 251 Q228 250 218 228 Q209 208 210 184" fill="#CCCCCC"/>
-      <!-- Corps fourrure gauche -->
-      <path d="M60 90 Q32 72 36 108 Q40 138 68 155 Q88 165 105 158" fill="#7A5510" stroke="#5C4008" stroke-width="1"/>
-      <path d="M63 93 Q40 78 44 110 Q48 135 72 150 Q90 160 104 154" fill="#9B6E1A"/>
-      <!-- Corps fourrure droite -->
-      <path d="M240 90 Q268 72 264 108 Q260 138 232 155 Q212 165 195 158" fill="#7A5510" stroke="#5C4008" stroke-width="1"/>
-      <path d="M237 93 Q260 78 256 110 Q252 135 228 150 Q210 160 196 154" fill="#9B6E1A"/>
-      <!-- Crâne -->
-      <ellipse cx="150" cy="125" rx="78" ry="74" fill="#9B6E1A"/>
-      <ellipse cx="150" cy="122" rx="74" ry="70" fill="#B07D20"/>
-      <!-- Zone sombre visage -->
-      <ellipse cx="150" cy="138" rx="60" ry="65" fill="#111"/>
-      <!-- Sourcils -->
-      <path d="M100 108 L134 120 L126 124 L92 113 Z" fill="#000"/>
-      <path d="M200 108 L166 120 L174 124 L208 113 Z" fill="#000"/>
-      <!-- Yeux rouges -->
-      <ellipse cx="122" cy="128" rx="16" ry="14" fill="#CC1F1F" id="s-eye-l"/>
-      <ellipse cx="178" cy="128" rx="16" ry="14" fill="#CC1F1F" id="s-eye-r"/>
-      <ellipse cx="122" cy="128" rx="11" ry="10" fill="#FF2020"/>
-      <ellipse cx="178" cy="128" rx="11" ry="10" fill="#FF2020"/>
-      <ellipse cx="119" cy="124" rx="5" ry="4" fill="#FF7070" opacity="0.6"/>
-      <ellipse cx="175" cy="124" rx="5" ry="4" fill="#FF7070" opacity="0.6"/>
-      <ellipse cx="123" cy="129" rx="6" ry="7" fill="#0D0D0D"/>
-      <ellipse cx="179" cy="129" rx="6" ry="7" fill="#0D0D0D"/>
-      <!-- Trompe -->
-      <path d="M134 158 Q128 170 131 183 Q136 198 148 205 Q156 209 160 202 Q165 190 161 177 Q157 165 154 158" fill="#9B6E1A" stroke="#5C4008" stroke-width="1.5"/>
-      <path d="M133 169 Q148 174 161 169" stroke="#5C4008" stroke-width="2.5" fill="none"/>
-      <path d="M132 180 Q148 186 161 180" stroke="#5C4008" stroke-width="2" fill="none"/>
-      <path d="M134 191 Q148 196 160 191" stroke="#5C4008" stroke-width="1.5" fill="none"/>
-      <!-- Touffes haut -->
-      <path d="M132 52 Q142 36 152 33 Q162 36 172 52 Q162 44 152 42 Q142 44 132 52Z" fill="#9B6E1A"/>
-      <path d="M118 62 Q126 48 136 54" fill="#7A5510"/>
-      <path d="M164 62 Q174 48 182 54" fill="#7A5510"/>
-      <!-- Éclairs front -->
-      <path d="M138 90 L134 102 L141 99 L136 114" stroke="#5C4008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M162 90 L166 102 L159 99 L164 114" stroke="#5C4008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <!-- Petites défenses -->
-      <path d="M116 188 Q100 200 98 215 Q100 224 112 220 Q122 216 126 200 L123 189Z" fill="white" stroke="#AAA" stroke-width="1"/>
-      <path d="M184 188 Q200 200 202 215 Q200 224 188 220 Q178 216 174 200 L177 189Z" fill="white" stroke="#AAA" stroke-width="1"/>
-    </svg>
-    <div class="splash-eye-glow" id="splash-eye-glow"></div>
-    <div class="splash-tusk-flash" id="splash-tusk-flash"></div>
-  </div>
-  <div class="splash-line" id="splash-line"></div>
-  <div class="splash-title" id="splash-title">CBC Mammouths</div>
-  <div class="splash-subtitle" id="splash-subtitle">Saint-Martin-de-Crau · Depuis 1976</div>
-</div>
+<!-- ══════════ PREMIUM VIDEO SPLASH SCREEN ══════════ -->
+<div id="cbc-premium-splash">
+  <video id="cbcSplashVideo"
+    autoplay
+    muted
+    playsinline
+    preload="auto"
+    poster="cbc_splash_poster.png">
+    <source src="cbc_premium_splash.mp4" type="video/mp4">
+  </video>
 
+  <div class="cbc-splash-skip" onclick="finishPremiumSplash()">PASSER</div>
+</div>
 
 <!-- ══════════ TOP BAR ══════════ -->
 <div class="topbar">
